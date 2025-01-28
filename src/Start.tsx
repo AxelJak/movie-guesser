@@ -3,7 +3,8 @@ import { useZero, useQuery } from "@rocicorp/zero/react"
 import {randID, randWord } from "./utils/rand";
 import { useState } from "react";
 import { useLocation } from "wouter";
-import Input from "./components/Input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function Start() {
 
@@ -32,9 +33,9 @@ export default function Start() {
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <h1 className="text-5xl font-bold">Movie guesser</h1>
         <Input type="text" placeholder="Room key" value={roomKey} onChange={(e: any) => setRoomKey(e.target.value)} />
-        <button onClick={() => joinRoom()}>Join room</button>
-        <button onClick={() => createRoom()}>Create room</button>
-        <button onClick={() => navigate("/admin")}>Admin</button>
+        <Button onClick={() => joinRoom()}>Join room</Button>
+        <Button onClick={() => createRoom()}>Create room</Button>
+        <Button onClick={() => navigate("/admin")}>Admin</Button>
       </div>
       <div className="flex flex-col gap-1 border border-gray-300 rounded-md p-2 m-2">
         {room.length > 0 ? room.map((room) =>
