@@ -7,6 +7,7 @@ import { createGuess } from "../utils/guess";
 import { createPlayer } from "../utils/player";
 import PlayersList from "./PlayersList";
 import Input from "./Input";
+import Settings from "./room/Settings";
 
 export default function Room() {
   const params = useParams();
@@ -36,10 +37,13 @@ export default function Room() {
                           .orderBy("timestamp", 'asc')
   const [guessesByRoom] = useQuery(guessQuery);
   const [roomPlayers] = useQuery(players.where("roomID", roomId));
+  const currentPlayer = roomPlayers.find((player) => player.id === cookies.playerId);
+  console.log(roomPlayers);
 
   function insertPlayer() {
     if (!room || !playerName) return;
-    const createdPlayer = createPlayer(playerName, room.id);
+    const isHost = roomPlayers.length === 0;
+    const createdPlayer = createPlayer(playerName, room.id, isHost);
     z.mutate.player.insert(createdPlayer);
     setCookie("playerId", createdPlayer.id, { expires: new Date(Date.now() + 1000 * 60 * 60 * 5) });
   }
@@ -93,7 +97,7 @@ export default function Room() {
       </button>
       <div className="flex gap-2">
         <PlayersList roomPlayers={roomPlayers} />
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-2" >
           <span className="text-3xl font-bold">Room {room.room_key}</span>
           {guessesByRoom.map((guess) =>
             <span key={guess.id} className="text-l">
@@ -112,6 +116,9 @@ export default function Room() {
             />
           <button onClick={submitGuess}>Submit</button>
         </div>
+        {currentPlayer?.isHost && (
+          <Settings roomId={roomId} isHost={true} />
+        )}
       </div>
     </div>
   );
