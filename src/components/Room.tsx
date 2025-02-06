@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useZero, useQuery } from "@rocicorp/zero/react";
 import { useParams, useLocation } from "wouter";
 import { Schema } from "../schema";
-import type { Room as RoomType } from "../schema";
 import { useCookies } from "react-cookie";
 import { createGuess } from "../utils/guess";
 import { createPlayer } from "../utils/player";
@@ -19,25 +18,25 @@ export default function Room() {
   const z = useZero<Schema>();
   const [guess, setGuess] = useState("");
   const [playerName, setPlayerName] = useState("");
-  const [roomState, setRoomState] = useState<RoomType | undefined>({} as RoomType);
+  const [settings, setSettings] = useState({});
 
   const rooms = z.query.room;
   const players = z.query.player;
   const guesses = z.query.guess;
 
-  const [room] = useQuery(rooms.where("room_key", roomKey).one());
-  
+  const [room] = useQuery(rooms.where("room_key", roomKey).one().related('settings', (settings) => settings.one()));
+
   useEffect(() => {
-    if (room && room.id !== roomState?.id) {
-      setRoomState(room);
+    if (room && room.settings) {
+      setSettings(room.settings);
     }
-  }, [room]);
+  }, [room, settings]);
 
   const guessQuery = guesses.related("sender", (sender) => sender.one())
-                          .where("roomID", roomState?.id ?? '')
+                          .where("roomID", room?.id ?? '')
                           .orderBy("timestamp", 'asc')
   const [guessesByRoom] = useQuery(guessQuery);
-  const [roomPlayers] = useQuery(players.where("roomID", roomState?.id ?? ''));
+  const [roomPlayers] = useQuery(players.where("roomID", room?.id ?? ''));
   const currentPlayer = roomPlayers.find((player) => player.id === cookies.playerId);
 
   function insertPlayer() {
@@ -49,12 +48,12 @@ export default function Room() {
   }
 
   function submitGuess() {
-    if (!roomState || !guess) return;
-    z.mutate.guess.insert(createGuess(guess, roomState.id, cookies.playerId));
+    if (!room || !guess) return;
+    z.mutate.guess.insert(createGuess(guess, room.id, cookies.playerId));
     setGuess(""); // Clear input after submission
   }
 
-  if (!roomState) {
+  if (!room) {
     return (
       <div>
         <button onClick={() => navigate("/")}>
@@ -72,7 +71,7 @@ export default function Room() {
           Back
         </button>
         <div className="flex flex-col gap-1">
-          <span className="text-3xl font-bold">Room {roomState.room_key}</span>
+          <span className="text-3xl font-bold">Room {room.room_key}</span>
           <span>You are not in this room</span>
         <Input 
           placeholder="Player name" 
@@ -98,7 +97,7 @@ export default function Room() {
       <div className="flex gap-2">
         <PlayersList roomPlayers={roomPlayers} />
         <div className="flex flex-col gap-2" >
-          <span className="text-3xl font-bold">Room {roomState.room_key}</span>
+          <span className="text-3xl font-bold">Room {room.room_key}</span>
           {guessesByRoom.map((guess) =>
             <span key={guess.id} className="text-l">
               {`${guess.sender?.name}: ${guess.guess}`}
@@ -116,8 +115,8 @@ export default function Room() {
             />
           <button onClick={submitGuess}>Submit</button>
         </div>
-        {currentPlayer?.isHost && (
-          <Settings roomId={roomState.id} isHost={true} />
+        {currentPlayer?.isHost && Object.keys(settings).length > 0 && (
+            <Settings roomSettings={settings} />
         )}
       </div>
     </div>

@@ -1,8 +1,10 @@
 import { Schema } from "./schema";
 import { useZero, useQuery } from "@rocicorp/zero/react"
-import {randID, randWord } from "./utils/rand";
+import { randWord } from "./utils/rand"; 
+import { nanoid } from "nanoid";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
+import { createSetting } from "@/utils/settings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -17,17 +19,19 @@ export default function Start() {
   const [roomKeys, setRoomKeys] = useState<string[]>([]);
 
   useEffect(() => {
-    console.log(room);
     if (room && room.length > roomKeys.length) {
       setRoomKeys(room.map((room) => room.room_key));
     }
   }, [room]);
 
   function createRoom() {
-    const roomKey = randWord();
-    z.mutate.room.insert({
-      id: randID(),
-      room_key: roomKey,
+    z.mutateBatch(async tx => {
+      const roomID = nanoid();
+      tx.room.insert({
+        id: roomID,
+        room_key: randWord(),
+      });
+      tx.settings.insert(createSetting(nanoid(), roomID));  
     });
   }
 

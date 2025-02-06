@@ -1,17 +1,10 @@
-import { useEffect, useState } from "react";
 import { useZero, useQuery } from "@rocicorp/zero/react";
 import { Schema } from "../../schema";
-import { createSettings } from "../../utils/settings";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "../ui/form";
 import { Input } from "../ui/input";
 import { Slider } from "../ui/slider";
 import { useForm } from "react-hook-form";
-
-interface SettingsProps {
-  roomId: string;
-  isHost: boolean;
-}
 
 interface SettingsFormValues {
   rounds: number;
@@ -19,32 +12,32 @@ interface SettingsFormValues {
   players: number;
 }
 
-export default function Settings({ roomId, isHost }: SettingsProps) {
+interface SettingsProps {
+  id?: string;
+  rounds?: number;
+  time?: number;
+  players?: number;
+  roomID?: string;
+}
+
+export default function Settings({ roomSettings }: { roomSettings: SettingsProps }) {
   const z = useZero<Schema>();
-  const settings = z.query.settings;
   const players = z.query.player;
 
-  const [roomSettings] = useQuery(settings.where("roomID", roomId).one());
-  const [roomPlayers] = useQuery(players.where("roomID", roomId));
-  const [settingsID, setSettingsID] = useState("");
+  const [roomPlayers] = useQuery(players.where("roomID", roomSettings.roomID ?? ''));
 
+  console.log(roomSettings);
+  
   const form = useForm<SettingsFormValues>({
     defaultValues: {
-      rounds: roomSettings?.rounds ?? 10,
-      time: roomSettings?.time ?? 60,
-      players: roomSettings?.players ?? 6,
+      rounds: roomSettings.rounds,
+      time: roomSettings.time,
+      players: roomSettings.players,
     },
   });
 
-  useEffect(() => {
-    if (!roomSettings && isHost) {
-      // Create default settings when room is created
-      z.mutate.settings.upsert(createSettings(roomId));
-    }
-  }, [roomSettings, roomId, isHost, z.mutate.settings]);
-
   const onSubmit = (values: SettingsFormValues) => {
-    if (!roomSettings || !isHost) return;
+    if (!roomSettings || !roomSettings.id) return;
     z.mutate.settings.update({
       id: roomSettings.id,
       ...values,
@@ -72,7 +65,6 @@ export default function Settings({ roomId, isHost }: SettingsProps) {
                       type="number"
                       {...field}
                       onChange={(e) => field.onChange(parseInt(e.target.value))}
-                      disabled={!isHost}
                     />
                   </FormControl>
                   <FormDescription>How many rounds to play</FormDescription>
@@ -91,8 +83,7 @@ export default function Settings({ roomId, isHost }: SettingsProps) {
                       min={30}
                       max={180}
                       step={30}
-                      onValueChange={(value : number[]) => field.value = value[0]}
-                      disabled={!isHost}
+                      onChange={(e: any) => field.onChange(parseInt(e.target.value))}
                     />
                   </FormControl>
                   <FormDescription>Time to guess each movie: {field.value}s</FormDescription>
@@ -110,7 +101,6 @@ export default function Settings({ roomId, isHost }: SettingsProps) {
                       type="number"
                       {...field}
                       onChange={(e) => field.onChange(parseInt(e.target.value))}
-                      disabled={!isHost}
                     />
                   </FormControl>
                   <FormDescription>Current players: {roomPlayers.length}</FormDescription>
