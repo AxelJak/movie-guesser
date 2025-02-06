@@ -1,5 +1,5 @@
 import { Player } from "../schema";
-import crown from "../../public/crown.svg";
+import crown from "@/assets/crown.svg";
 
 
 export default function PlayersList({ roomPlayers }: { roomPlayers: readonly Player[] }) {

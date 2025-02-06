@@ -2,6 +2,24 @@
   "permissions": {
     "player": {
       "row": {
+        "update": {},
+        "delete": []
+      }
+    },
+    "room": {
+      "row": {
+        "update": {},
+        "delete": []
+      }
+    },
+    "settings": {
+      "row": {
+        "update": {},
+        "delete": []
+      }
+    },
+    "guess": {
+      "row": {
         "update": {
           "preMutation": []
         },
@@ -16,29 +34,7 @@
         "delete": []
       }
     },
-    "settings": {
-      "row": {
-        "update": {},
-        "delete": []
-      }
-    },
-    "room": {
-      "row": {
-        "update": {
-          "preMutation": []
-        },
-        "delete": []
-      }
-    },
-    "guess": {
-      "row": {
-        "update": {
-          "preMutation": []
-        },
-        "delete": []
-      }
-    },
-    "gameState": {
+    "game_state": {
       "row": {
         "update": {},
         "delete": []
@@ -56,7 +52,7 @@
         "delete": []
       }
     },
-    "movieList": {
+    "movie_list": {
       "row": {
         "update": {},
         "delete": []
@@ -64,343 +60,423 @@
     }
   },
   "schema": {
-    "version": 1,
+    "version": 2,
     "tables": {
-      "game_state": {
-        "tableName": "game_state",
-        "primaryKey": [
-          "id"
-        ],
-        "columns": {
-          "currentPlayerExplaining": {
-            "type": "string",
-            "optional": false
-          },
-          "currentRound": {
-            "type": "number",
-            "optional": false
-          },
-          "endedAt": {
-            "type": "number",
-            "optional": false
-          },
-          "gameStatus": {
-            "type": "string",
-            "optional": false
-          },
-          "id": {
-            "type": "string",
-            "optional": false
-          },
-          "roomID": {
-            "type": "string",
-            "optional": false
-          },
-          "startedAt": {
-            "type": "number",
-            "optional": false
-          }
-        },
-        "relationships": {
-          "currentPlayerExplaining": {
-            "sourceField": [
-              "currentPlayerExplaining"
-            ],
-            "destField": [
-              "id"
-            ],
-            "destSchema": "player"
-          },
-          "room": {
-            "sourceField": [
-              "roomID"
-            ],
-            "destField": [
-              "id"
-            ],
-            "destSchema": "room"
-          }
-        }
-      },
-      "guess": {
-        "tableName": "guess",
-        "primaryKey": [
-          "id"
-        ],
-        "columns": {
-          "guess": {
-            "type": "string",
-            "optional": false
-          },
-          "id": {
-            "type": "string",
-            "optional": false
-          },
-          "roomID": {
-            "type": "string",
-            "optional": false
-          },
-          "senderID": {
-            "type": "string",
-            "optional": false
-          },
-          "timestamp": {
-            "type": "number",
-            "optional": false
-          }
-        },
-        "relationships": {
-          "room": {
-            "sourceField": [
-              "roomID"
-            ],
-            "destField": [
-              "id"
-            ],
-            "destSchema": "room"
-          },
-          "sender": {
-            "sourceField": [
-              "senderID"
-            ],
-            "destField": [
-              "id"
-            ],
-            "destSchema": "player"
-          }
-        }
-      },
-      "list": {
-        "tableName": "list",
-        "primaryKey": [
-          "id"
-        ],
+      "player": {
+        "name": "player",
         "columns": {
           "id": {
             "type": "string",
-            "optional": false
+            "optional": false,
+            "customType": null
           },
           "name": {
             "type": "string",
-            "optional": false
+            "optional": false,
+            "customType": null
+          },
+          "score": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "roomID": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "isHost": {
+            "type": "boolean",
+            "optional": false,
+            "customType": null
+          },
+          "created_at": {
+            "type": "number",
+            "optional": false,
+            "customType": null
           }
         },
-        "relationships": {}
-      },
-      "movie": {
-        "tableName": "movie",
         "primaryKey": [
           "id"
-        ],
+        ]
+      },
+      "room": {
+        "name": "room",
         "columns": {
-          "backdrop_path": {
-            "type": "string",
-            "optional": false
-          },
           "id": {
             "type": "string",
-            "optional": false
+            "optional": false,
+            "customType": null
           },
-          "overview": {
+          "room_key": {
             "type": "string",
-            "optional": false
+            "optional": false,
+            "customType": null
+          }
+        },
+        "primaryKey": [
+          "id"
+        ]
+      },
+      "settings": {
+        "name": "settings",
+        "columns": {
+          "id": {
+            "type": "string",
+            "optional": false,
+            "customType": null
           },
-          "poster_path": {
-            "type": "string",
-            "optional": false
+          "rounds": {
+            "type": "number",
+            "optional": false,
+            "customType": null
           },
-          "release_date": {
+          "time": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "players": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "roomID": {
             "type": "string",
-            "optional": false
+            "optional": false,
+            "customType": null
+          }
+        },
+        "primaryKey": [
+          "id"
+        ]
+      },
+      "guess": {
+        "name": "guess",
+        "columns": {
+          "id": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "senderID": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "roomID": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "guess": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "timestamp": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          }
+        },
+        "primaryKey": [
+          "id"
+        ]
+      },
+      "round": {
+        "name": "round",
+        "columns": {
+          "id": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "round": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "playerID": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "roomID": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "timestamp": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "movie": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          }
+        },
+        "primaryKey": [
+          "id"
+        ]
+      },
+      "movie": {
+        "name": "movie",
+        "columns": {
+          "id": {
+            "type": "string",
+            "optional": false,
+            "customType": null
           },
           "title": {
             "type": "string",
-            "optional": false
+            "optional": false,
+            "customType": null
+          },
+          "overview": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "poster_path": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "backdrop_path": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "release_date": {
+            "type": "string",
+            "optional": false,
+            "customType": null
           },
           "vote_average": {
             "type": "number",
-            "optional": false
+            "optional": false,
+            "customType": null
           },
           "vote_count": {
             "type": "number",
-            "optional": false
+            "optional": false,
+            "customType": null
           }
         },
-        "relationships": {}
+        "primaryKey": [
+          "id"
+        ]
+      },
+      "list": {
+        "name": "list",
+        "columns": {
+          "id": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "name": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          }
+        },
+        "primaryKey": [
+          "id"
+        ]
       },
       "movie_list": {
-        "tableName": "movie_list",
+        "name": "movie_list",
+        "columns": {
+          "movie_id": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "list_id": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          }
+        },
         "primaryKey": [
           "movie_id",
           "list_id"
-        ],
+        ]
+      },
+      "game_state": {
+        "name": "game_state",
         "columns": {
-          "list_id": {
+          "id": {
             "type": "string",
-            "optional": false
+            "optional": false,
+            "customType": null
           },
-          "movie_id": {
+          "roomID": {
             "type": "string",
-            "optional": false
+            "optional": false,
+            "customType": null
+          },
+          "currentRound": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "currentPlayerExplaining": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "gameStatus": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "startedAt": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "endedAt": {
+            "type": "number",
+            "optional": false,
+            "customType": null
           }
         },
-        "relationships": {
-          "list": {
+        "primaryKey": [
+          "id"
+        ]
+      }
+    },
+    "relationships": {
+      "player": {
+        "rounds": [
+          {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "playerID"
+            ],
+            "destSchema": "round",
+            "cardinality": "many"
+          }
+        ],
+        "guesses": [
+          {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "senderID"
+            ],
+            "destSchema": "guess",
+            "cardinality": "many"
+          }
+        ]
+      },
+      "room": {
+        "players": [
+          {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "roomID"
+            ],
+            "destSchema": "player",
+            "cardinality": "many"
+          }
+        ],
+        "rounds": [
+          {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "roomID"
+            ],
+            "destSchema": "round",
+            "cardinality": "many"
+          }
+        ],
+        "settings": [
+          {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "roomID"
+            ],
+            "destSchema": "settings",
+            "cardinality": "many"
+          }
+        ],
+        "guesses": [
+          {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "roomID"
+            ],
+            "destSchema": "guess",
+            "cardinality": "many"
+          }
+        ],
+        "gameState": [
+          {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "roomID"
+            ],
+            "destSchema": "game_state",
+            "cardinality": "many"
+          }
+        ]
+      },
+      "movie": {
+        "lists": [
+          {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "movie_id"
+            ],
+            "destSchema": "movie_list",
+            "cardinality": "many"
+          },
+          {
             "sourceField": [
               "list_id"
             ],
             "destField": [
               "id"
             ],
-            "destSchema": "list"
-          },
-          "movie": {
+            "destSchema": "list",
+            "cardinality": "many"
+          }
+        ]
+      },
+      "guess": {
+        "sender": [
+          {
             "sourceField": [
-              "movie_id"
+              "senderID"
             ],
             "destField": [
               "id"
             ],
-            "destSchema": "movie"
+            "destSchema": "player",
+            "cardinality": "many"
           }
-        }
-      },
-      "player": {
-        "tableName": "player",
-        "primaryKey": [
-          "id"
-        ],
-        "columns": {
-          "id": {
-            "type": "string",
-            "optional": false
-          },
-          "isHost": {
-            "type": "boolean",
-            "optional": false
-          },
-          "name": {
-            "type": "string",
-            "optional": false
-          },
-          "roomID": {
-            "type": "string",
-            "optional": false
-          },
-          "score": {
-            "type": "number",
-            "optional": false
-          }
-        },
-        "relationships": {}
-      },
-      "room": {
-        "tableName": "room",
-        "primaryKey": [
-          "id"
-        ],
-        "columns": {
-          "id": {
-            "type": "string",
-            "optional": false
-          },
-          "room_key": {
-            "type": "string",
-            "optional": false
-          }
-        },
-        "relationships": {}
-      },
-      "round": {
-        "tableName": "round",
-        "primaryKey": [
-          "id"
-        ],
-        "columns": {
-          "id": {
-            "type": "string",
-            "optional": false
-          },
-          "movie": {
-            "type": "string",
-            "optional": false
-          },
-          "playerID": {
-            "type": "string",
-            "optional": false
-          },
-          "roomID": {
-            "type": "string",
-            "optional": false
-          },
-          "round": {
-            "type": "number",
-            "optional": false
-          },
-          "timestamp": {
-            "type": "number",
-            "optional": false
-          }
-        },
-        "relationships": {
-          "player": {
-            "sourceField": [
-              "playerID"
-            ],
-            "destField": [
-              "id"
-            ],
-            "destSchema": "player"
-          },
-          "room": {
-            "sourceField": [
-              "roomID"
-            ],
-            "destField": [
-              "id"
-            ],
-            "destSchema": "room"
-          }
-        }
-      },
-      "settings": {
-        "tableName": "settings",
-        "primaryKey": [
-          "id"
-        ],
-        "columns": {
-          "id": {
-            "type": "string",
-            "optional": false
-          },
-          "players": {
-            "type": "number",
-            "optional": false
-          },
-          "roomID": {
-            "type": "string",
-            "optional": false
-          },
-          "rounds": {
-            "type": "number",
-            "optional": false
-          },
-          "time": {
-            "type": "number",
-            "optional": false
-          }
-        },
-        "relationships": {
-          "room": {
-            "sourceField": [
-              "roomID"
-            ],
-            "destField": [
-              "id"
-            ],
-            "destSchema": "room"
-          }
-        }
+        ]
       }
     }
   }

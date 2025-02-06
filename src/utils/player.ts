@@ -8,5 +8,6 @@ export function createPlayer(player: string, roomId: string, isHost: boolean = f
     score: 0,
     roomID: roomId,
     isHost: isHost,
+    created_at: new Date().getTime(),
   };
 }

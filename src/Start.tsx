@@ -1,7 +1,7 @@
 import { Schema } from "./schema";
 import { useZero, useQuery } from "@rocicorp/zero/react"
 import {randID, randWord } from "./utils/rand";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,8 +12,16 @@ export default function Start() {
   const [_, navigate] = useLocation();
 
   const rooms = z.query.room;
-  const [room] = useQuery(rooms);
+  const [room] = useQuery(rooms.related('players'));
   const [roomKey, setRoomKey] = useState("");
+  const [roomKeys, setRoomKeys] = useState<string[]>([]);
+
+  useEffect(() => {
+    console.log(room);
+    if (room && room.length > roomKeys.length) {
+      setRoomKeys(room.map((room) => room.room_key));
+    }
+  }, [room]);
 
   function createRoom() {
     const roomKey = randWord();
@@ -39,9 +47,12 @@ export default function Start() {
       </div>
       <div className="flex flex-col gap-1 border border-gray-300 rounded-md p-2 m-2">
         {room.length > 0 ? room.map((room) =>
-          <span key={room.id} className="text-l">
-            {room.room_key}
-          </span>
+          <div key={room.id} className="flex justify-between mx-3">
+            <span className="text-l">
+              {room.room_key}
+            </span>
+            <span>{room.players.length}</span>
+          </div>
         ) : ''}
       </div>
     </div>
