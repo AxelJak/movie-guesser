@@ -112,6 +112,11 @@
             "type": "string",
             "optional": false,
             "customType": null
+          },
+          "created_at": {
+            "type": "number",
+            "optional": false,
+            "customType": null
           }
         },
         "primaryKey": [
@@ -142,6 +147,21 @@
             "customType": null
           },
           "roomID": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "emoji_explain_limit": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "hints": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          },
+          "listID": {
             "type": "string",
             "optional": false,
             "customType": null
@@ -282,6 +302,11 @@
             "type": "string",
             "optional": false,
             "customType": null
+          },
+          "description": {
+            "type": "string",
+            "optional": false,
+            "customType": null
           }
         },
         "primaryKey": [
@@ -341,6 +366,39 @@
             "customType": null
           },
           "endedAt": {
+            "type": "number",
+            "optional": false,
+            "customType": null
+          }
+        },
+        "primaryKey": [
+          "id"
+        ]
+      },
+      "message": {
+        "name": "message",
+        "columns": {
+          "id": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "senderID": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "roomID": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "message": {
+            "type": "string",
+            "optional": false,
+            "customType": null
+          },
+          "timestamp": {
             "type": "number",
             "optional": false,
             "customType": null
@@ -438,6 +496,18 @@
             "destSchema": "game_state",
             "cardinality": "many"
           }
+        ],
+        "messages": [
+          {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "roomID"
+            ],
+            "destSchema": "message",
+            "cardinality": "many"
+          }
         ]
       },
       "movie": {
@@ -450,16 +520,6 @@
               "movie_id"
             ],
             "destSchema": "movie_list",
-            "cardinality": "many"
-          },
-          {
-            "sourceField": [
-              "list_id"
-            ],
-            "destField": [
-              "id"
-            ],
-            "destSchema": "list",
             "cardinality": "many"
           }
         ]
@@ -475,6 +535,150 @@
             ],
             "destSchema": "player",
             "cardinality": "many"
+          }
+        ]
+      },
+      "message": {
+        "sender": [
+          {
+            "sourceField": [
+              "senderID"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "player",
+            "cardinality": "one"
+          }
+        ],
+        "room": [
+          {
+            "sourceField": [
+              "roomID"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "room",
+            "cardinality": "one"
+          }
+        ]
+      },
+      "round": {
+        "room": [
+          {
+            "sourceField": [
+              "roomID"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "room",
+            "cardinality": "one"
+          }
+        ]
+      },
+      "movie_list": {
+        "movie": [
+          {
+            "sourceField": [
+              "movie_id"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "movie",
+            "cardinality": "one"
+          }
+        ],
+        "list": [
+          {
+            "sourceField": [
+              "list_id"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "list",
+            "cardinality": "one"
+          }
+        ]
+      },
+      "list": {
+        "movieList": [
+          {
+            "sourceField": [
+              "id"
+            ],
+            "destField": [
+              "list_id"
+            ],
+            "destSchema": "movie_list",
+            "cardinality": "many"
+          }
+        ]
+      },
+      "settings": {
+        "room": [
+          {
+            "sourceField": [
+              "roomID"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "room",
+            "cardinality": "one"
+          }
+        ],
+        "list": [
+          {
+            "sourceField": [
+              "listID"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "list",
+            "cardinality": "one"
+          }
+        ]
+      },
+      "game_state": {
+        "room": [
+          {
+            "sourceField": [
+              "roomID"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "room",
+            "cardinality": "one"
+          }
+        ],
+        "currentPlayerExplaining": [
+          {
+            "sourceField": [
+              "currentPlayerExplaining"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "player",
+            "cardinality": "one"
+          }
+        ],
+        "currentRound": [
+          {
+            "sourceField": [
+              "currentRound"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "round",
+            "cardinality": "one"
           }
         ]
       }

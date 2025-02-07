@@ -27,6 +27,7 @@ const room = table('room')
   .columns({
     id: string(),
     room_key: string(),
+    created_at: number(),
   })
   .primaryKey('id');
 
@@ -48,6 +49,9 @@ const settings = table('settings')
     time: number(),
     players: number(),
     roomID: string(),
+    emoji_explain_limit: number(),
+    hints: number(),
+    listID: string(),
   })
   .primaryKey('id');
 
@@ -57,6 +61,16 @@ const guess = table('guess')
     senderID: string(),
     roomID: string(),
     guess: string(),
+    timestamp: number(),
+  })
+  .primaryKey('id');
+
+const message = table('message')
+  .columns({
+    id: string(),
+    senderID: string(),
+    roomID: string(),
+    message: string(),
     timestamp: number(),
   })
   .primaryKey('id');
@@ -90,6 +104,7 @@ const list = table('list')
   .columns({
     id: string(),
     name: string(),
+    description: string(),
   })
   .primaryKey('id');
 
@@ -101,6 +116,21 @@ const movieList = table('movie_list')
   .primaryKey('movie_id', 'list_id');
 
 // Relationships
+const movieListRelationships = relationships(movieList, ({one}) => ({
+  movie: one({
+    sourceField: ['movie_id'],
+    destField: ['id'],
+    destSchema: movie,
+  }),
+  list: one({
+    sourceField: ['list_id'],
+    destField: ['id'],
+    destSchema: list,
+  }),
+}));
+
+
+
 const playerRelationships = relationships(player, ({many}) => ({
   rounds: many({
     sourceField: ['id'],
@@ -140,6 +170,11 @@ const roomRelationships = relationships(room, ({many}) => ({
     destField: ['roomID'],
     destSchema: gameState,
   }),
+  messages: many({
+    sourceField: ['id'],
+    destField: ['roomID'],
+    destSchema: message,
+  }),
 }));
 
 const movieRelationships = relationships(movie, ({many}) => ({
@@ -149,12 +184,69 @@ const movieRelationships = relationships(movie, ({many}) => ({
       destField: ['movie_id'],
       destSchema: movieList,
     },
+  ),
+}));
+
+const listRelationships = relationships(list, ({many}) => ({
+  movieList: many(
     {
-      sourceField: ['list_id'],
-      destField: ['id'],
-      destSchema: list,
+      sourceField: ['id'],
+      destField: ['list_id'],
+      destSchema: movieList,
     },
   ),
+ }));
+
+const settingsRelationships = relationships(settings, ({one}) => ({
+  room: one({
+    sourceField: ['roomID'],
+    destField: ['id'],
+    destSchema: room,
+  }),
+  list: one({
+    sourceField: ['listID'],
+    destField: ['id'],
+    destSchema: list,
+  }),
+}));
+
+const messageRelationships = relationships(message, ({one}) => ({
+  sender: one({
+    sourceField: ['senderID'],
+    destField: ['id'],
+    destSchema: player,
+  }),
+  room: one({
+    sourceField: ['roomID'],
+    destField: ['id'],
+    destSchema: room,
+  }),
+}));
+
+const roundRelationships = relationships(round, ({one}) => ({
+  room: one({
+    sourceField: ['roomID'],
+    destField: ['id'],
+    destSchema: room,
+  }),
+}));
+
+const gameStateRelationships = relationships(gameState, ({one}) => ({
+  room: one({
+    sourceField: ['roomID'],
+    destField: ['id'],
+    destSchema: room,
+  }),
+  currentPlayerExplaining: one({
+    sourceField: ['currentPlayerExplaining'],
+    destField: ['id'],
+    destSchema: player,
+  }),
+  currentRound: one({
+    sourceField: ['currentRound'],
+    destField: ['id'],
+    destSchema: round,
+  }),
 }));
 
 const guessRelationships = relationships(guess, ({many}) => ({
@@ -182,8 +274,20 @@ export const schema = createSchema(2, {
     list,
     movieList,
     gameState,
+    message,
   ],
-  relationships: [playerRelationships, roomRelationships, movieRelationships, guessRelationships],
+  relationships: [
+    playerRelationships,
+    roomRelationships,
+    movieRelationships,
+    guessRelationships,
+    messageRelationships,
+    roundRelationships,
+    movieListRelationships,
+    listRelationships,
+    settingsRelationships,
+    gameStateRelationships,
+  ],
 });
 
 export type Schema = typeof schema;
