@@ -108,7 +108,7 @@ const list = table('list')
   })
   .primaryKey('id');
 
-const movieList = table('movie_list')
+const movie_list = table('movie_list')
   .columns({
     movie_id: string(),
     list_id: string(),
@@ -116,20 +116,6 @@ const movieList = table('movie_list')
   .primaryKey('movie_id', 'list_id');
 
 // Relationships
-const movieListRelationships = relationships(movieList, ({one}) => ({
-  movie: one({
-    sourceField: ['movie_id'],
-    destField: ['id'],
-    destSchema: movie,
-  }),
-  list: one({
-    sourceField: ['list_id'],
-    destField: ['id'],
-    destSchema: list,
-  }),
-}));
-
-
 
 const playerRelationships = relationships(player, ({many}) => ({
   rounds: many({
@@ -177,23 +163,33 @@ const roomRelationships = relationships(room, ({many}) => ({
   }),
 }));
 
-const movieRelationships = relationships(movie, ({many}) => ({
-  lists: many(
+const movieRelationships = relationships(movie, ({one}) => ({
+  list: one(
     {
       sourceField: ['id'],
       destField: ['movie_id'],
-      destSchema: movieList,
+      destSchema: movie_list,
     },
+    { 
+      sourceField: ['list_id'],
+      destField: ['id'],
+      destSchema: list,
+    }
   ),
 }));
 
 const listRelationships = relationships(list, ({many}) => ({
-  movieList: many(
+  moives: many(
     {
       sourceField: ['id'],
       destField: ['list_id'],
-      destSchema: movieList,
+      destSchema: movie_list,
     },
+    { 
+      sourceField: ['movie_id'],
+      destField: ['id'],
+      destSchema: movie,
+    }
   ),
  }));
 
@@ -272,7 +268,7 @@ export const schema = createSchema(2, {
     round,
     movie,
     list,
-    movieList,
+    movie_list,
     gameState,
     message,
   ],
@@ -283,7 +279,6 @@ export const schema = createSchema(2, {
     guessRelationships,
     messageRelationships,
     roundRelationships,
-    movieListRelationships,
     listRelationships,
     settingsRelationships,
     gameStateRelationships,
@@ -376,6 +371,15 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
       },
     },
     movie_list: {
+      row: {
+        insert: ANYONE_CAN,
+        update: {
+          preMutation: ANYONE_CAN,
+        },
+        delete: NOBODY_CAN,
+      },
+    },
+    message: {
       row: {
         insert: ANYONE_CAN,
         update: {

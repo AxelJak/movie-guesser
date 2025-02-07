@@ -57,6 +57,12 @@
         "update": {},
         "delete": []
       }
+    },
+    "message": {
+      "row": {
+        "update": {},
+        "delete": []
+      }
     }
   },
   "schema": {
@@ -511,7 +517,7 @@
         ]
       },
       "movie": {
-        "lists": [
+        "list": [
           {
             "sourceField": [
               "id"
@@ -520,7 +526,17 @@
               "movie_id"
             ],
             "destSchema": "movie_list",
-            "cardinality": "many"
+            "cardinality": "one"
+          },
+          {
+            "sourceField": [
+              "list_id"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "list",
+            "cardinality": "one"
           }
         ]
       },
@@ -578,34 +594,8 @@
           }
         ]
       },
-      "movie_list": {
-        "movie": [
-          {
-            "sourceField": [
-              "movie_id"
-            ],
-            "destField": [
-              "id"
-            ],
-            "destSchema": "movie",
-            "cardinality": "one"
-          }
-        ],
-        "list": [
-          {
-            "sourceField": [
-              "list_id"
-            ],
-            "destField": [
-              "id"
-            ],
-            "destSchema": "list",
-            "cardinality": "one"
-          }
-        ]
-      },
       "list": {
-        "movieList": [
+        "moives": [
           {
             "sourceField": [
               "id"
@@ -614,6 +604,16 @@
               "list_id"
             ],
             "destSchema": "movie_list",
+            "cardinality": "many"
+          },
+          {
+            "sourceField": [
+              "movie_id"
+            ],
+            "destField": [
+              "id"
+            ],
+            "destSchema": "movie",
             "cardinality": "many"
           }
         ]

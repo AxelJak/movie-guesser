@@ -4,7 +4,7 @@ import App from "./App.tsx";
 import "./index.css";
 import { ZeroProvider } from "@rocicorp/zero/react";
 import { Zero } from "@rocicorp/zero";
-import { schema } from "./schema.ts";
+import { type Schema, schema } from "./schema.ts";
 import { CookiesProvider } from "react-cookie";
 
 const z = new Zero({
@@ -15,6 +15,15 @@ const z = new Zero({
   // the schema. Switch to 'idb' for local-persistence.
   kvStore: "mem",
 });
+
+function exposeDevHooks(z: Zero<Schema>) {
+  const casted = window as unknown as {
+    z?: Zero<Schema>;
+  };
+  casted.z = z;
+}
+
+exposeDevHooks(z);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

@@ -11,19 +11,21 @@ export default function Lists() {
   const [newListName, setNewListName] = useState('');
   const [selectedList, setSelectedList] = useState<string>(lists[0]?.id ?? '');
 
-  const movieListQuery = z.query.movie_list.where('list_id', selectedList).related('movie', (movie) => movie.one());
-  const [moviesInList] = useQuery(movieListQuery);
+  const movieListQuery = z.query.list.related('moives').where('id', selectedList);
+  const [list] = useQuery(movieListQuery);
+
+  const moviesInList = list[0].moives ?? [];
 
   function createList() {
     z.mutate.list.insert({
       id: randID(),
       name: newListName,
+      description: '',
     });
     setNewListName('');
   }
 
   function deleteList(listId: string) {
-    console.log(listId);
     z.mutate.list.delete({id: listId});
     if (selectedList === listId) {
       setSelectedList("");
@@ -91,20 +93,20 @@ export default function Lists() {
           </h2>
           {selectedList && (
             <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-4">
-              {moviesInList.map((list) => (
-                <div key={list.movie?.id} className="border rounded-lg p-4 flex">
-                  {list.movie?.poster_path && (
+              {moviesInList.map((movie) => (
+                <div key={movie?.id} className="border rounded-lg p-4 flex">
+                  {movie?.poster_path && (
                     <img
-                      src={`https://image.tmdb.org/t/p/w200${list.movie?.poster_path}`}
-                      alt={list.movie?.title}
+                      src={`https://image.tmdb.org/t/p/w200${movie?.poster_path}`}
+                      alt={movie?.title}
                       className="w-24 h-auto rounded-lg mr-4"
                     />
                   )}
                   <div className="flex-1">
-                    <h3 className="font-semibold">{list.movie?.title}</h3>
-                    <p className="text-sm text-gray-600">{list.movie?.release_date}</p>
+                    <h3 className="font-semibold">{movie?.title}</h3>
+                    <p className="text-sm text-gray-600">{movie?.release_date}</p>
                     <button
-                      onClick={() => removeFromList(list.movie?.id)}
+                      onClick={() => removeFromList(movie?.id)}
                       className="mt-2 text-red-600 text-sm hover:text-red-800"
                     >
                       Remove from list

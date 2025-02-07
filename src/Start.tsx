@@ -30,6 +30,7 @@ export default function Start() {
       tx.room.insert({
         id: roomID,
         room_key: randWord(),
+        created_at: new Date().getTime(),
       });
       tx.settings.insert(createSetting(nanoid(), roomID));  
     });
