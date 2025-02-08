@@ -1,22 +1,21 @@
-import { Schema } from "./schema";
-import { useZero, useQuery } from "@rocicorp/zero/react"
-import { randWord } from "./utils/rand"; 
-import { nanoid } from "nanoid";
+import { useQuery } from "@rocicorp/zero/react"
+import { useZero } from "@/hooks/use-zero";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
-import { createSetting } from "@/utils/settings";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import Input from "./components/Input";
+import { randWord } from "./utils/rand";
+import { nanoid } from "nanoid";
 
 export default function Start() {
 
-  const z = useZero<Schema>();
+  const z = useZero();
   const [_, navigate] = useLocation();
 
   const rooms = z.query.room;
-  const [room] = useQuery(rooms.related('players'));
-  const [roomKey, setRoomKey] = useState("");
+  const [room] = useQuery(rooms);
   const [roomKeys, setRoomKeys] = useState<string[]>([]);
+  const [roomKey, setRoomKey] = useState<string>('');
 
   useEffect(() => {
     if (room && room.length > roomKeys.length) {
@@ -25,41 +24,30 @@ export default function Start() {
   }, [room]);
 
   function createRoom() {
-    z.mutateBatch(async tx => {
-      const roomID = nanoid();
-      tx.room.insert({
-        id: roomID,
-        room_key: randWord(),
-        created_at: new Date().getTime(),
-      });
-      tx.settings.insert(createSetting(nanoid(), roomID));  
+    const roomKey = randWord();
+    z.mutate.room.insert({
+      id: nanoid(),
+      room_key: roomKey,
+      created_at: new Date().getTime(),
     });
+    navigate(`/room/${roomKey}?action=create`);
   }
-
+  
   function joinRoom() {
-    if (roomKey.length < 4) return;
-    navigate(`/room/${roomKey}`);
+    navigate(`/room/${roomKey}?action=join`);
   }
 
   return (
     <div>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <h1 className="text-5xl font-bold">Movie guesser</h1>
-        <Input type="text" placeholder="Room key" value={roomKey} onChange={(e: any) => setRoomKey(e.target.value)} />
+        <Input placeholder="Room key" onChange={(e: any) => setRoomKey(e.target.value)} />
         <Button onClick={() => joinRoom()}>Join room</Button>
         <Button onClick={() => createRoom()}>Create room</Button>
         <Button onClick={() => navigate("/admin")}>Admin</Button>
       </div>
-      <div className="flex flex-col gap-1 border border-gray-300 rounded-md p-2 m-2">
-        {room.length > 0 ? room.map((room) =>
-          <div key={room.id} className="flex justify-between mx-3">
-            <span className="text-l">
-              {room.room_key}
-            </span>
-            <span>{room.players.length}</span>
-          </div>
-        ) : ''}
-      </div>
+      {roomKeys.map((roomKey) => <div>{roomKey}</div>)}
+      {roomKeys.length}
     </div>
   );
 }
