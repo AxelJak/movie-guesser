@@ -32,9 +32,9 @@ export default function Start() {
     });
     navigate(`/room/${roomKey}?action=create`);
   }
-  
+
   function joinRoom() {
-    navigate(`/room/${roomKey}?action=join`);
+    navigate(`/room/${roomKey}`);
   }
 
   return (

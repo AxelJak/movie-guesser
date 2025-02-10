@@ -17,7 +17,7 @@ const player = table('player')
     id: string(),
     name: string(),
     score: number(),
-    roomID: string(),
+    roomID: string().optional(),
     isHost: boolean(),
     created_at: number(),
   })

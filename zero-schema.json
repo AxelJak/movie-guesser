@@ -88,7 +88,7 @@
           },
           "roomID": {
             "type": "string",
-            "optional": false,
+            "optional": true,
             "customType": null
           },
           "isHost": {

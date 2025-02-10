@@ -9,26 +9,30 @@ import { useCookies } from "react-cookie";
 export default function CreatePlayer({ roomKey, createRoom, setPlayerJoined }: { roomKey: string, createRoom: boolean, setPlayerJoined: any }) {
   const z = useZero();
   const [nickname, setNickname] = useState('');
-  const [cookies, setCookie] = useCookies(["playerId"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["playerId"]);
   const playerQuery = z.query.player;
   const roomQuery = z.query.room
         .where("room_key", roomKey)
         .related('players')
         .one();
   const [room] = useQuery(roomQuery);
-  const [player] = useQuery(playerQuery.where("id", cookies.playerId).one());
+  const [player] = useQuery(playerQuery.where("id", cookies.playerId ?? '').one());
+
+  if (!player) {
+    removeCookie('playerId');
+  }
 
   useEffect(() => {
     if (player) {
       setNickname(player.name);
     }
-  }, [player]);
+  }, [player, room]);
 
   function insertPlayer() {
     if (!room) return;
     const makeHost = room.players.find((player) => player.isHost) === undefined ? true : false;
     const createdPlayer = createPlayer(nickname, room.id, makeHost);
-    z.mutate.player.insert(createdPlayer);
+    z.mutate.player.upsert(createdPlayer);
     setCookie("playerId", createdPlayer.id, { expires: new Date(Date.now() + 1000 * 60 * 60 * 5) });
     setPlayerJoined(true);
   }
