@@ -1,10 +1,9 @@
-"use client"
-
 import { useState } from "react"
 import { Check, ChevronsUpDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import type { List } from "@/schema";
 import {
   Command,
   CommandEmpty,
@@ -19,9 +18,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-export default function Autocomplete({ lists }: { lists: any[]}) {
-  const [open, setOpen] = useState(false)
-  const [value, setValue] = useState("")
+export default function MovielistSelect({ lists, value, onSelect }: { lists: List[], value: string, onSelect?: (listId: string) => void }) {
+  const [open, setOpen] = useState(false);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -30,26 +28,26 @@ export default function Autocomplete({ lists }: { lists: any[]}) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-[300px] justify-between"
         >
           {value
             ? lists.find((list) => list.id === value)?.name
-            : "Select framework..."}
+            : "Select list..."}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
+      <PopoverContent className="w-[300px] p-0">
         <Command>
-          <CommandInput placeholder="Search framework..." className="h-9" />
+          <CommandInput placeholder="Search list..." className="h-9" />
           <CommandList>
-            <CommandEmpty>No framework found.</CommandEmpty>
+            <CommandEmpty>No list found.</CommandEmpty>
             <CommandGroup>
               {lists.map((list) => (
                 <CommandItem
                   key={list.id}
                   value={list.id}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue)
+                    onSelect && onSelect(currentValue)
                     setOpen(false)
                   }}
                 >
@@ -57,7 +55,7 @@ export default function Autocomplete({ lists }: { lists: any[]}) {
                   <Check
                     className={cn(
                       "ml-auto",
-                      value === list.name ? "opacity-100" : "opacity-0"
+                      value === list.id ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>
