@@ -58,11 +58,15 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
   }
 
   function leaveRoom() {
-    if(playerId) {
+    if (playerId) {
       z.mutate.player.update({
         id: playerId,
         roomID: null,
       });
+      if (room?.players.length === 1 && room.players[0].id === playerId) {
+        //Dosen't work for some reason
+        z.mutate.room.delete({id: room.id});
+      }
     }
     navigate("/");
   }

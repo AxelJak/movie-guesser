@@ -1,9 +1,8 @@
 import { Player } from "../schema";
-import { randID } from "./rand";
 
-export function createPlayer(player: string, roomId: string, isHost: boolean = false): Player {
+export function createPlayer(id: string, player: string, roomId: string, isHost: boolean = false): Player {
   return {
-    id: randID(),
+    id: id,
     name: player,
     score: 0,
     roomID: roomId,

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import Input from "./components/Input";
 import { randWord } from "./utils/rand";
 import { nanoid } from "nanoid";
+import { createSetting } from "./utils/settings";
 
 export default function Start() {
 
@@ -25,10 +26,14 @@ export default function Start() {
 
   function createRoom() {
     const roomKey = randWord();
-    z.mutate.room.insert({
-      id: nanoid(),
-      room_key: roomKey,
-      created_at: new Date().getTime(),
+    z.mutateBatch( async tx => {
+      const roomId = nanoid();
+      tx.room.insert({
+        id: roomId,
+        room_key: roomKey,
+        created_at: new Date().getTime(),
+      });
+      tx.settings.insert(createSetting(nanoid(), roomId));
     });
     navigate(`/room/${roomKey}?action=create`);
   }

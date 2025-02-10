@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createPlayer } from "@/utils/player";
 import { useCookies } from "react-cookie";
+import { nanoid } from "nanoid";
 
 export default function CreatePlayer({ roomKey, createRoom, setPlayerJoined }: { roomKey: string, createRoom: boolean, setPlayerJoined: any }) {
   const z = useZero();
@@ -16,9 +17,9 @@ export default function CreatePlayer({ roomKey, createRoom, setPlayerJoined }: {
         .related('players')
         .one();
   const [room] = useQuery(roomQuery);
-  const [player] = useQuery(playerQuery.where("id", cookies.playerId ?? '').one());
+  const [player, playerResult] = useQuery(playerQuery.where("id", cookies.playerId ?? '').one());
 
-  if (!player) {
+  if (!player && playerResult.type === 'complete') {
     removeCookie('playerId');
   }
 
@@ -31,7 +32,8 @@ export default function CreatePlayer({ roomKey, createRoom, setPlayerJoined }: {
   function insertPlayer() {
     if (!room) return;
     const makeHost = room.players.find((player) => player.isHost) === undefined ? true : false;
-    const createdPlayer = createPlayer(nickname, room.id, makeHost);
+    const playerId = player?.id ?? nanoid();
+    const createdPlayer = createPlayer(playerId, nickname, room.id, makeHost);
     z.mutate.player.upsert(createdPlayer);
     setCookie("playerId", createdPlayer.id, { expires: new Date(Date.now() + 1000 * 60 * 60 * 5) });
     setPlayerJoined(true);

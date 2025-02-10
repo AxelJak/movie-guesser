@@ -5,11 +5,15 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } fr
 import { Input } from "../ui/input";
 import { Slider } from "../ui/slider";
 import { useForm } from "react-hook-form";
+import Autocomplete from "../setting/Autocomplete";
 
 interface SettingsFormValues {
   rounds: number;
   time: number;
   players: number;
+  hints: number;
+  emoji_explain_limit: number;
+  listID: string;
 }
 
 interface SettingsProps {
@@ -18,13 +22,18 @@ interface SettingsProps {
   time?: number;
   players?: number;
   roomID?: string;
+  hints?: number;
+  emoji_explain_limit?: number;
+  listID?: string;
 }
 
 export default function Settings({ roomSettings }: { roomSettings: SettingsProps }) {
   const z = useZero<Schema>();
   const players = z.query.player;
+  const listQuery = z.query.list;
 
   const [roomPlayers] = useQuery(players.where("roomID", roomSettings.roomID ?? ''));
+  const [lists] = useQuery(listQuery);
 
   console.log(roomSettings);
   
@@ -33,6 +42,9 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
       rounds: roomSettings.rounds,
       time: roomSettings.time,
       players: roomSettings.players,
+      hints: roomSettings.hints,
+      emoji_explain_limit: roomSettings.emoji_explain_limit,
+      listID: roomSettings.listID,
     },
   });
 
@@ -73,6 +85,23 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
             />
             <FormField
               control={form.control}
+              name="hints"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Number of Hints</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={(e) => field.onChange(parseInt(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormDescription>How many hints to give</FormDescription>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="time"
               render={({ field }) => (
                 <FormItem>
@@ -87,6 +116,19 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
                     />
                   </FormControl>
                   <FormDescription>Time to guess each movie: {field.value}s</FormDescription>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="listID"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Movielist</FormLabel>
+                  <FormControl>
+                    <Autocomplete lists={lists} />
+                  </FormControl>
+                  <FormDescription>Description: {lists.find((list) => list.id === field.value)?.description}</FormDescription>
                 </FormItem>
               )}
             />
