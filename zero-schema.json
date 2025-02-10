@@ -157,10 +157,11 @@
             "optional": false,
             "customType": null
           },
-          "emoji_explain_limit": {
+          "emojiExplainLimit": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "emoji_explain_limit"
           },
           "hints": {
             "type": "number",
@@ -266,30 +267,35 @@
             "optional": false,
             "customType": null
           },
-          "poster_path": {
+          "posterPath": {
             "type": "string",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "poster_path"
           },
-          "backdrop_path": {
+          "backdropPath": {
             "type": "string",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "backdrop_path"
           },
-          "release_date": {
+          "releaseDate": {
             "type": "string",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "release_date"
           },
-          "vote_average": {
+          "voteAverage": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "vote_average"
           },
-          "vote_count": {
+          "voteCount": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "vote_count"
           }
         },
         "primaryKey": [

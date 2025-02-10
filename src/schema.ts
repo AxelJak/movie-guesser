@@ -49,7 +49,7 @@ const settings = table('settings')
     time: number(),
     players: number(),
     roomID: string(),
-    emoji_explain_limit: number(),
+    emojiExplainLimit: number().from('emoji_explain_limit'),
     hints: number(),
     listID: string(),
   })
@@ -92,11 +92,11 @@ const movie = table('movie')
     id: string(),
     title: string(),
     overview: string(),
-    poster_path: string(),
-    backdrop_path: string(),
-    release_date: string(),
-    vote_average: number(),
-    vote_count: number(),
+    posterPath: string().from('poster_path'),
+    backdropPath: string().from('backdrop_path'),
+    releaseDate: string().from('release_date'),
+    voteAverage: number().from('vote_average'),
+    voteCount: number().from('vote_count'),
   })
   .primaryKey('id');
 
@@ -108,12 +108,12 @@ const list = table('list')
   })
   .primaryKey('id');
 
-const movie_list = table('movie_list')
+const movieList = table('movie_list')
   .columns({
-    movie_id: string(),
-    list_id: string(),
+    movieId: string().from('movie_id'),
+    listId: string().from('list_id'),
   })
-  .primaryKey('movie_id', 'list_id');
+  .primaryKey('movieId', 'listId');
 
 // Relationships
 const playerRelationships = relationships(player, ({many}) => ({
@@ -166,11 +166,11 @@ const movieRelationships = relationships(movie, ({one}) => ({
   list: one(
     {
       sourceField: ['id'],
-      destField: ['movie_id'],
-      destSchema: movie_list,
+      destField: ['movieId'],
+      destSchema: movieList,
     },
     { 
-      sourceField: ['list_id'],
+      sourceField: ['listId'],
       destField: ['id'],
       destSchema: list,
     }
@@ -181,11 +181,11 @@ const listRelationships = relationships(list, ({many}) => ({
   moives: many(
     {
       sourceField: ['id'],
-      destField: ['list_id'],
-      destSchema: movie_list,
+      destField: ['listId'],
+      destSchema: movieList,
     },
     { 
-      sourceField: ['movie_id'],
+      sourceField: ['movieId'],
       destField: ['id'],
       destSchema: movie,
     }
@@ -267,7 +267,7 @@ export const schema = createSchema(2, {
     round,
     movie,
     list,
-    movie_list,
+    movieList,
     gameState,
     message,
   ],
@@ -369,7 +369,7 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
         delete: NOBODY_CAN,
       },
     },
-    movie_list: {
+    movieList: {
       row: {
         insert: ANYONE_CAN,
         update: {

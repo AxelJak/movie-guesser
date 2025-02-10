@@ -9,11 +9,11 @@ interface TMDBMovie {
   id: number;
   title: string;
   overview: string;
-  poster_path: string;
-  backdrop_path: string;
-  release_date: string;
-  vote_average: number;
-  vote_count: number;
+  posterPath: string;
+  backdropPath: string;
+  releaseDate: string;
+  voteAverage: number;
+  voteCount: number;
 }
 
 export default function Movies() {
@@ -50,7 +50,7 @@ export default function Movies() {
       };
       const response = await fetch(url, options) 
       const data = await response.json();
-      const filteredResults = data.results.filter((movie: TMDBMovie) => !!movie.poster_path && !!movie.release_date);
+      const filteredResults = data.results.filter((movie: TMDBMovie) => !!movie.posterPath && !!movie.releaseDate);
       setSearchResults(filteredResults);
     } catch (error) {
       console.error('Error searching TMDB:', error);
@@ -62,19 +62,19 @@ export default function Movies() {
       id: tmdbMovie.id.toString(),
       title: tmdbMovie.title,
       overview: tmdbMovie.overview,
-      poster_path: tmdbMovie.poster_path,
-      backdrop_path: tmdbMovie.backdrop_path,
-      release_date: tmdbMovie.release_date,
-      vote_average: tmdbMovie.vote_average,
-      vote_count: tmdbMovie.vote_count,
+      posterPath: tmdbMovie.posterPath,
+      backdropPath: tmdbMovie.backdropPath,
+      releaseDate: tmdbMovie.releaseDate,
+      voteAverage: tmdbMovie.voteAverage,
+      voteCount: tmdbMovie.voteCount,
     };
 
     addMovie(movie);
     
     if (selectedListId) {
       addToList({
-        movie_id: movie.id,
-        list_id: selectedListId,
+        movieId: movie.id,
+        listId: selectedListId,
       });
     }
   };
@@ -144,15 +144,15 @@ export default function Movies() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
             {searchResults.map((movie) => (
               <div key={movie.id} className="border rounded-lg p-4">
-                {movie.poster_path && (
+                {movie.posterPath && (
                   <img
-                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                    src={`https://image.tmdb.org/t/p/w500${movie.posterPath}`}
                     alt={movie.title}
                     className="w-full h-auto rounded-lg mb-2"
                   />
                 )}
                 <h3 className="font-semibold">{movie.title}</h3>
-                <p className="text-sm text-gray-600 mb-2">{movie.release_date}</p>
+                <p className="text-sm text-gray-600 mb-2">{movie.releaseDate}</p>
                 <button
                   onClick={() => handleAddMovie(movie)}
                   className="bg-green-600 text-white px-3 py-1 rounded-md text-sm hover:bg-green-700"
@@ -169,15 +169,15 @@ export default function Movies() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
           {movies?.map((movie) => (
             <div key={movie.id} className="border rounded-lg p-4">
-              {movie.poster_path && (
+              {movie.posterPath && (
                 <img
-                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  src={`https://image.tmdb.org/t/p/w500${movie.posterPath}`}
                   alt={movie.title}
                   className="w-full h-auto rounded-lg mb-2"
                 />
               )}
               <h3 className="font-semibold">{movie.title}</h3>
-              <p className="text-sm text-gray-600">{movie.release_date}</p>
+              <p className="text-sm text-gray-600">{movie.releaseDate}</p>
             </div>
           ))}
         </div>

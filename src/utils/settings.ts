@@ -20,7 +20,7 @@ export function createSetting(
     rounds,
     time,
     players,
-    emoji_explain_limit: emojiExplainLimit,
+    emojiExplainLimit: emojiExplainLimit,
     hints,
     listID,
   };

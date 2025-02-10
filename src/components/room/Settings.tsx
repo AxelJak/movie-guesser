@@ -12,7 +12,7 @@ interface SettingsFormValues {
   time: number;
   players: number;
   hints: number;
-  emoji_explain_limit: number;
+  emojiExplainLimit: number;
   listID: string;
 }
 
@@ -23,7 +23,7 @@ interface SettingsProps {
   players?: number;
   roomID?: string;
   hints?: number;
-  emoji_explain_limit?: number;
+  emojiExplainLimit?: number;
   listID?: string;
 }
 
@@ -41,7 +41,7 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
       time: roomSettings.time,
       players: roomSettings.players,
       hints: roomSettings.hints,
-      emoji_explain_limit: roomSettings.emoji_explain_limit,
+      emojiExplainLimit: roomSettings.emojiExplainLimit,
       listID: roomSettings.listID,
     },
   });
@@ -150,7 +150,7 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
             />
             <FormField
               control={form.control}
-              name="emoji_explain_limit"
+              name="emojiExplainLimit"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Max Explain emojis</FormLabel>

@@ -34,7 +34,7 @@ export default function Lists() {
 
   function removeFromList(movieId: string | undefined) {
     if (!movieId) return;
-    z.mutate.movie_list.delete({movie_id: movieId, list_id: selectedList});
+    z.mutate.movie_list.delete({movieId: movieId, listId: selectedList});
   }
 
   return (
@@ -95,16 +95,16 @@ export default function Lists() {
             <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-4">
               {moviesInList.map((movie) => (
                 <div key={movie?.id} className="border rounded-lg p-4 flex">
-                  {movie?.poster_path && (
+                  {movie?.posterPath && (
                     <img
-                      src={`https://image.tmdb.org/t/p/w200${movie?.poster_path}`}
+                      src={`https://image.tmdb.org/t/p/w200${movie?.posterPath}`}
                       alt={movie?.title}
                       className="w-24 h-auto rounded-lg mr-4"
                     />
                   )}
                   <div className="flex-1">
                     <h3 className="font-semibold">{movie?.title}</h3>
-                    <p className="text-sm text-gray-600">{movie?.release_date}</p>
+                    <p className="text-sm text-gray-600">{movie?.releaseDate}</p>
                     <button
                       onClick={() => removeFromList(movie?.id)}
                       className="mt-2 text-red-600 text-sm hover:text-red-800"
