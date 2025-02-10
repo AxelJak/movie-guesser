@@ -5,6 +5,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import Input from "./components/Input";
 import { randWord } from "./utils/rand";
+import { createGame } from "@/hooks/useGame";
 import { nanoid } from "nanoid";
 import { createSetting } from "./utils/settings";
 
@@ -34,6 +35,7 @@ export default function Start() {
         created_at: new Date().getTime(),
       });
       tx.settings.insert(createSetting(nanoid(), roomId));
+      tx.game_state.insert(createGame(nanoid(), roomId));
     });
     navigate(`/room/${roomKey}?action=create`);
   }
@@ -43,7 +45,7 @@ export default function Start() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col bg-white rounded-lg border-2 p-10 justify-center items-center">
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <h1 className="text-5xl font-bold">Movie guesser</h1>
         <Input placeholder="Room key" onChange={(e: any) => setRoomKey(e.target.value)} />
@@ -51,7 +53,7 @@ export default function Start() {
         <Button onClick={() => createRoom()}>Create room</Button>
         <Button onClick={() => navigate("/admin")}>Admin</Button>
       </div>
-      {roomKeys.map((roomKey) => <div>{roomKey}</div>)}
+      {roomKeys.map((roomKey) => <div key={roomKey}>{roomKey}</div>)}
       {roomKeys.length}
     </div>
   );

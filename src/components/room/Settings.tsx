@@ -34,8 +34,6 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
 
   const [roomPlayers] = useQuery(players.where("roomID", roomSettings.roomID ?? ''));
   const [lists] = useQuery(listQuery);
-
-  console.log(roomSettings);
   
   const form = useForm<SettingsFormValues>({
     defaultValues: {
@@ -107,8 +105,8 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
                     <Slider
                       defaultValue={[90]}
                       min={30}
-                      max={180}
-                      step={30}
+                      max={100}
+                      step={10}
                       onChange={(e: any) => field.onChange(parseInt(e.target.value))}
                     />
                   </FormControl>

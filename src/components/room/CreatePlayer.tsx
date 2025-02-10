@@ -3,6 +3,7 @@ import { useQuery } from "@rocicorp/zero/react";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { createPlayer } from "@/utils/player";
 import { useCookies } from "react-cookie";
 import { nanoid } from "nanoid";
@@ -40,9 +41,12 @@ export default function CreatePlayer({ roomKey, createRoom, setPlayerJoined }: {
   }
 
   return (
-    <div>
-      <h1>Create player</h1>
-      <Input placeholder="Nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+    <div className="flex flex-col bg-white p-5 rounded-lg border-2 gap-7">
+      <h1 className="text-5xl font-bold text-center">Create player</h1>
+      <div>
+        <Label htmlFor="nickname">Nickname</Label>
+        <Input id="nickname" placeholder="Nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+      </div>
       <Button onClick={() => insertPlayer()} >{ createRoom ? 'Create room' : 'Join room' }</Button>
     </div>
   )

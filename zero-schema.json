@@ -354,27 +354,32 @@
           "currentRound": {
             "type": "number",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "current_round"
           },
           "currentPlayerExplaining": {
             "type": "string",
-            "optional": false,
-            "customType": null
+            "optional": true,
+            "customType": null,
+            "serverName": "current_player_explaining"
           },
           "gameStatus": {
             "type": "string",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "game_status"
           },
           "startedAt": {
             "type": "number",
-            "optional": false,
-            "customType": null
+            "optional": true,
+            "customType": null,
+            "serverName": "started_at"
           },
           "endedAt": {
             "type": "number",
-            "optional": false,
-            "customType": null
+            "optional": true,
+            "customType": null,
+            "serverName": "ended_at"
           }
         },
         "primaryKey": [

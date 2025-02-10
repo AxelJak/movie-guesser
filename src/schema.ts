@@ -79,11 +79,11 @@ const gameState = table('game_state')
   .columns({
     id: string(),
     roomID: string(),
-    currentRound: number(),
-    currentPlayerExplaining: string(),
-    gameStatus: string(),
-    startedAt: number(),
-    endedAt: number(),
+    currentRound: number().from('current_round'),
+    currentPlayerExplaining: string().optional().from('current_player_explaining'),
+    gameStatus: string().from('game_status'),
+    startedAt: number().optional().from('started_at'),
+    endedAt: number().optional().from('ended_at'),
   })
   .primaryKey('id');
 
@@ -116,7 +116,6 @@ const movie_list = table('movie_list')
   .primaryKey('movie_id', 'list_id');
 
 // Relationships
-
 const playerRelationships = relationships(player, ({many}) => ({
   rounds: many({
     sourceField: ['id'],

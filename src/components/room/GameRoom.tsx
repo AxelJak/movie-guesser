@@ -18,10 +18,14 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
   const [cookies] = useCookies(["playerId"]);
   const [playerId, setPlayerId] = useState<string>('');
   
-  const rooms = z.query.room;
+  const rooms = z.query.room
+  .related('players')
+  .related('gameState', (gameState) => gameState.one())
+  .related('settings', (settings) => settings.one())
+  .where("room_key", roomKey);
   const guesses = z.query.guess;
 
-  const [room, roomResult] = useQuery(rooms.where("room_key", roomKey).one().related('settings', (settings) => settings.one()).related('players'));
+  const [room, roomResult] = useQuery(rooms.one());
 
   useEffect(() => {
     if (room && room.settings) {
@@ -89,7 +93,10 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
         Back
       </button>
       <div className="flex gap-2">
-        <PlayersList roomPlayers={room.players} />
+        <div className="flex flex-col gap-2">
+          <PlayersList roomPlayers={room.players} />
+          {currentPlayer?.isHost && <Button>Start game</Button>}
+        </div>
         <div className="flex flex-col gap-2 justify-between" >
           <span className="text-3xl font-bold text-center">Room {room.room_key}</span>
           <div className="flex flex-col justify-end grow">
