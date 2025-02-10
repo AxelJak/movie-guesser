@@ -5,7 +5,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } fr
 import { Input } from "../ui/input";
 import { Slider } from "../ui/slider";
 import { useForm } from "react-hook-form";
-import Autocomplete from "../setting/Autocomplete";
+import MovielistSelect from "../setting/MovielistSelect";
 
 interface SettingsFormValues {
   rounds: number;
@@ -50,6 +50,7 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
 
   const onSubmit = (values: SettingsFormValues) => {
     if (!roomSettings || !roomSettings.id) return;
+    console.log(values);
     z.mutate.settings.update({
       id: roomSettings.id,
       ...values,
@@ -66,6 +67,55 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
       <CardContent>
         <Form {...form}>
           <form onChange={form.handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="players"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Max Players</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={(e) => field.onChange(parseInt(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormDescription>Current players: {roomPlayers.length}</FormDescription>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="listID"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Movielist</FormLabel>
+                  <FormControl>
+                    <MovielistSelect lists={lists} value={field.value} onSelect={(listId) => field.onChange(listId)} />
+                  </FormControl>
+                  <FormDescription>Description: {lists.find((list) => list.id === field.value)?.description}</FormDescription>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="time"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Time per Round (seconds)</FormLabel>
+                  <FormControl>
+                    <Slider
+                      defaultValue={[90]}
+                      min={30}
+                      max={180}
+                      step={30}
+                      onChange={(e: any) => field.onChange(parseInt(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormDescription>Time to guess each movie: {field.value}s</FormDescription>
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="rounds"
@@ -102,42 +152,10 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
             />
             <FormField
               control={form.control}
-              name="time"
+              name="emoji_explain_limit"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Time per Round (seconds)</FormLabel>
-                  <FormControl>
-                    <Slider
-                      defaultValue={[90]}
-                      min={30}
-                      max={180}
-                      step={30}
-                      onChange={(e: any) => field.onChange(parseInt(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormDescription>Time to guess each movie: {field.value}s</FormDescription>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="listID"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Movielist</FormLabel>
-                  <FormControl>
-                    <Autocomplete lists={lists} />
-                  </FormControl>
-                  <FormDescription>Description: {lists.find((list) => list.id === field.value)?.description}</FormDescription>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="players"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Max Players</FormLabel>
+                  <FormLabel>Max Explain emojis</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -145,7 +163,7 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
                       onChange={(e) => field.onChange(parseInt(e.target.value))}
                     />
                   </FormControl>
-                  <FormDescription>Current players: {roomPlayers.length}</FormDescription>
+                  <FormDescription>How many emojis to explain with</FormDescription>
                 </FormItem>
               )}
             />

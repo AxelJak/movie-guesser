@@ -5,6 +5,7 @@ import { Schema } from "@/schema";
 import { createGuess } from "@/utils/guess";
 import PlayersList from "@/components/PlayersList";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import Settings from "@/components/room/Settings";
 import { useCookies } from 'react-cookie';
 
@@ -83,30 +84,37 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
   }
 
   return (
-    <div>
+    <div className="flex bg-white p-5 rounded-lg border-2">
       <button className="absolute left-20 top-20" onClick={() => leaveRoom()}>
         Back
       </button>
       <div className="flex gap-2">
         <PlayersList roomPlayers={room.players} />
-        <div className="flex flex-col gap-2" >
-          <span className="text-3xl font-bold">Room {room.room_key}</span>
-          {guessesByRoom.map((guess) =>
-            <span key={guess.id} className="text-l">
-              {`${guess.sender?.name}: ${guess.guess}`}
-            </span>
-          )}
-          <Input 
-            type="text" 
-            value={guess}
-            onKeyDown={(e: any) => {
-              if (e.key === "Enter") {
-                submitGuess();
-              }
-            }}
-            onChange={(e: any) => setGuess(e.target.value)} 
-            />
-          <button onClick={submitGuess}>Submit</button>
+        <div className="flex flex-col gap-2 justify-between" >
+          <span className="text-3xl font-bold text-center">Room {room.room_key}</span>
+          <div className="flex flex-col justify-end grow">
+            <div className="h-[700px] overflow-y-auto flex flex-col-reverse">
+              {guessesByRoom.map((guess) =>
+                <span key={guess.id} className="text-l">
+                  {`${guess.sender?.name}: ${guess.guess}`}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Input 
+              className="w-[400px]"
+              type="text" 
+              value={guess}
+              onKeyDown={(e: any) => {
+                if (e.key === "Enter") {
+                  submitGuess();
+                }
+              }}
+              onChange={(e: any) => setGuess(e.target.value)} 
+              />
+            <Button onClick={submitGuess}>Send</Button>
+          </div>
         </div>
         {currentPlayer?.isHost && Object.keys(settings).length > 0 && (
             <Settings roomSettings={settings} />
