@@ -102,7 +102,7 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
                   <FormLabel>Time per Round (seconds)</FormLabel>
                   <FormControl>
                     <Slider
-                      defaultValue={[90]}
+                      defaultValue={[field.value]}
                       min={30}
                       max={100}
                       step={10}

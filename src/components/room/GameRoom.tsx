@@ -3,6 +3,7 @@ import { useZero, useQuery } from "@rocicorp/zero/react";
 import { useCookies } from 'react-cookie';
 import { useLocation } from "wouter";
 import { Schema } from "@/schema";
+import type { Movie } from "@/schema";
 import { createGuess } from "@/utils/guess";
 import { createMessage } from "@/utils/message";
 import { Input } from "@/components/ui/input";
@@ -10,16 +11,17 @@ import { Button } from "@/components/ui/button";
 import PlayersList from "@/components/PlayersList";
 import Settings from "@/components/room/Settings";
 import MovieAutocomplete from '@/components/movie/MovieAutocomplete';
+import MovieCard from '@/components/room/MovieCard';
 
 export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string, setPlayerJoined: any }) {
   const [_, navigate] = useLocation(); 
 
   const z = useZero<Schema>();
   const [cookies] = useCookies(["playerId"]);
-  const [guess, setGuess] = useState("");
   const [message, setMessage] = useState("");
   const [settings, setSettings] = useState({});
   const [playerId, setPlayerId] = useState<string>('');
+  const [currentMovie, setCurrentMovie] = useState<Movie | undefined>();
   
   const rooms = z.query.room
   .related('players')
@@ -34,6 +36,12 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
       setSettings(room.settings);
     }
   }, [room, settings]);
+
+  useEffect(() => {
+    const movies = z.query.movie.where('id', '10681').one().run();
+    console.log(movies);
+    setCurrentMovie(movies);
+  }, []);
   
   
   const messageQuery = z.query.message
@@ -106,6 +114,10 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
         Back
       </button>
       <div className="flex gap-2">
+
+        { currentMovie && <div className="w-[350px] absolute">
+          <MovieCard movie={currentMovie} />
+        </div>}
         <div className="flex flex-col gap-2">
           <PlayersList roomPlayers={room.players} />
           {currentPlayer?.isHost && <Button>Start game</Button>}
