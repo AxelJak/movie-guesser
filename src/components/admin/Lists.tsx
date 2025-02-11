@@ -11,10 +11,10 @@ export default function Lists() {
   const [newListName, setNewListName] = useState('');
   const [selectedList, setSelectedList] = useState<string>(lists[0]?.id ?? '');
 
-  const movieListQuery = z.query.list.related('moives').where('id', selectedList);
+  const movieListQuery = z.query.list.related('movies').where('id', selectedList);
   const [list] = useQuery(movieListQuery);
 
-  const moviesInList = list[0].moives ?? [];
+  const moviesInList = list[0].movies ?? [];
 
   function createList() {
     z.mutate.list.insert({

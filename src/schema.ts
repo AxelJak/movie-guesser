@@ -178,7 +178,7 @@ const movieRelationships = relationships(movie, ({one}) => ({
 }));
 
 const listRelationships = relationships(list, ({many}) => ({
-  moives: many(
+  movies: many(
     {
       sourceField: ['id'],
       destField: ['listId'],
@@ -295,6 +295,7 @@ export type MovieList = Row<typeof schema.tables.movie_list>;
 export type GameState = Row<typeof schema.tables.game_state>;
 export type Settings = Row<typeof schema.tables.settings>;
 export type Guess = Row<typeof schema.tables.guess>;
+export type Message = Row<typeof schema.tables.message>;
 
 export const permissions = definePermissions<AuthData, Schema>(schema, () => {
   

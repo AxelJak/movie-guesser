@@ -48,7 +48,6 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
 
   const onSubmit = (values: SettingsFormValues) => {
     if (!roomSettings || !roomSettings.id) return;
-    console.log(values);
     z.mutate.settings.update({
       id: roomSettings.id,
       ...values,

@@ -1,21 +1,24 @@
 import { useState, useEffect } from 'react';
 import { useZero, useQuery } from "@rocicorp/zero/react";
+import { useCookies } from 'react-cookie';
 import { useLocation } from "wouter";
 import { Schema } from "@/schema";
 import { createGuess } from "@/utils/guess";
-import PlayersList from "@/components/PlayersList";
+import { createMessage } from "@/utils/message";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import PlayersList from "@/components/PlayersList";
 import Settings from "@/components/room/Settings";
-import { useCookies } from 'react-cookie';
+import MovieAutocomplete from '@/components/movie/MovieAutocomplete';
 
 export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string, setPlayerJoined: any }) {
   const [_, navigate] = useLocation(); 
 
   const z = useZero<Schema>();
-  const [guess, setGuess] = useState("");
-  const [settings, setSettings] = useState({});
   const [cookies] = useCookies(["playerId"]);
+  const [guess, setGuess] = useState("");
+  const [message, setMessage] = useState("");
+  const [settings, setSettings] = useState({});
   const [playerId, setPlayerId] = useState<string>('');
   
   const rooms = z.query.room
@@ -23,21 +26,26 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
   .related('gameState', (gameState) => gameState.one())
   .related('settings', (settings) => settings.one())
   .where("room_key", roomKey);
-  const guesses = z.query.guess;
-
+  
   const [room, roomResult] = useQuery(rooms.one());
-
+  
   useEffect(() => {
     if (room && room.settings) {
       setSettings(room.settings);
     }
   }, [room, settings]);
-
   
-  const guessQuery = guesses.related("sender", (sender) => sender.one())
-  .where("roomID", room?.id ?? '')
-  .orderBy("timestamp", 'asc')
+  
+  const messageQuery = z.query.message
+      .related("sender", (sender) => sender.one())
+      .where("roomID", room?.id ?? '')
+      .orderBy("timestamp", 'desc');
+  const guessQuery = z.query.guess
+      .related("sender", (sender) => sender.one())
+      .where("roomID", room?.id ?? '')
+      .orderBy("timestamp", 'asc');
   const [guessesByRoom] = useQuery(guessQuery);
+  const [messages] = useQuery(messageQuery);
   const currentPlayer = room?.players.find((player) => player.id === playerId);
   
   useEffect(() => {
@@ -56,10 +64,15 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
     }
   }, [cookies, roomResult]);
   
-  function submitGuess() {
-    if (!room || !guess) return;
-    z.mutate.guess.insert(createGuess(guess, room.id, cookies.playerId));
-    setGuess(""); // Clear input after submission
+  function submitGuess(movieTitle: string) {
+    if (!room) return;
+    z.mutate.guess.insert(createGuess(movieTitle, room.id, cookies.playerId));
+  }
+
+  function submitMessage() {
+    if (!room || !message) return;
+    z.mutate.message.insert(createMessage(message, room.id, cookies.playerId));
+    setMessage(""); // Clear input after submission
   }
 
   function leaveRoom() {
@@ -101,26 +114,28 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
           <span className="text-3xl font-bold text-center">Room {room.room_key}</span>
           <div className="flex flex-col justify-end grow">
             <div className="h-[700px] overflow-y-auto flex flex-col-reverse">
-              {guessesByRoom.map((guess) =>
-                <span key={guess.id} className="text-l">
-                  {`${guess.sender?.name}: ${guess.guess}`}
+              {messages.map((message) =>
+                <span key={message.id} className="text-l">
+                  {`${message.sender?.name}: ${message.message}`}
                 </span>
               )}
+              {guessesByRoom.map(guess => <span key={guess.id} className="text-l text-blue-400">{guess.sender?.name}: {guess.guess}</span>)}
             </div>
           </div>
           <div className="flex gap-2">
+            { room.settings && <MovieAutocomplete listId={room.settings.listID} onSelect={(movieTitle) => submitGuess(movieTitle)} /> }
             <Input 
               className="w-[400px]"
               type="text" 
-              value={guess}
+              value={message}
               onKeyDown={(e: any) => {
                 if (e.key === "Enter") {
-                  submitGuess();
+                  submitMessage();
                 }
               }}
-              onChange={(e: any) => setGuess(e.target.value)} 
+              onChange={(e: any) => setMessage(e.target.value)} 
               />
-            <Button onClick={submitGuess}>Send</Button>
+            <Button onClick={submitMessage}>Send</Button>
           </div>
         </div>
         {currentPlayer?.isHost && Object.keys(settings).length > 0 && (

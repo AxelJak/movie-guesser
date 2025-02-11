@@ -45,7 +45,19 @@ export default function CreatePlayer({ roomKey, createRoom, setPlayerJoined }: {
       <h1 className="text-5xl font-bold text-center">Create player</h1>
       <div>
         <Label htmlFor="nickname">Nickname</Label>
-        <Input id="nickname" placeholder="Nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+        <Input
+          id="nickname"
+          placeholder="Nickname"
+          value={nickname}
+          onChange={(e) => 
+            setNickname(e.target.value)
+          }
+          onKeyDown={(e: any) => {
+            if (e.key === "Enter") {
+              insertPlayer();
+            }
+          }}
+        />
       </div>
       <Button onClick={() => insertPlayer()} >{ createRoom ? 'Create room' : 'Join room' }</Button>
     </div>
