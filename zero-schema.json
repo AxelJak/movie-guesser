@@ -328,20 +328,22 @@
       "movie_list": {
         "name": "movie_list",
         "columns": {
-          "movie_id": {
+          "movieId": {
             "type": "string",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "movie_id"
           },
-          "list_id": {
+          "listId": {
             "type": "string",
             "optional": false,
-            "customType": null
+            "customType": null,
+            "serverName": "list_id"
           }
         },
         "primaryKey": [
-          "movie_id",
-          "list_id"
+          "movieId",
+          "listId"
         ]
       },
       "game_state": {
@@ -534,14 +536,14 @@
               "id"
             ],
             "destField": [
-              "movie_id"
+              "movieId"
             ],
             "destSchema": "movie_list",
             "cardinality": "one"
           },
           {
             "sourceField": [
-              "list_id"
+              "listId"
             ],
             "destField": [
               "id"
@@ -612,14 +614,14 @@
               "id"
             ],
             "destField": [
-              "list_id"
+              "listId"
             ],
             "destSchema": "movie_list",
             "cardinality": "many"
           },
           {
             "sourceField": [
-              "movie_id"
+              "movieId"
             ],
             "destField": [
               "id"

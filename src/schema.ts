@@ -369,7 +369,7 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
         delete: NOBODY_CAN,
       },
     },
-    movieList: {
+    movie_list: {
       row: {
         insert: ANYONE_CAN,
         update: {
