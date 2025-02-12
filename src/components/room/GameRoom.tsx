@@ -30,7 +30,9 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
   .where("room_key", roomKey);
   
   const [room, roomResult] = useQuery(rooms.one());
-  
+  const moviesQuery = z.query.list.related('movies').where('id', room?.settings?.listID ?? '');
+  const [list] = useQuery(moviesQuery);
+
   useEffect(() => {
     if (room && room.settings) {
       setSettings(room.settings);
@@ -38,10 +40,9 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
   }, [room, settings]);
 
   useEffect(() => {
-    const movies = z.query.movie.where('id', '10681').one().run();
-    console.log(movies);
-    setCurrentMovie(movies);
-  }, []);
+    if (!list) return;
+    setCurrentMovie(list[0].movies[0]);
+  }, [list]);
   
   
   const messageQuery = z.query.message
