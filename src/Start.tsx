@@ -8,6 +8,7 @@ import { randWord } from "./utils/rand";
 import { createGame } from "@/hooks/useGame";
 import { nanoid } from "nanoid";
 import { createSetting } from "./utils/settings";
+import RoomInput from "@/components/room/RoomInput";
 
 export default function Start() {
 
@@ -52,6 +53,7 @@ export default function Start() {
         <Button onClick={() => joinRoom()}>Join room</Button>
         <Button onClick={() => createRoom()}>Create room</Button>
         <Button onClick={() => navigate("/admin")}>Admin</Button>
+        <RoomInput listId={'zny1ju25l6n'} roomId={'nDK8mQ9dMBdZzPW1R3n-Z'} playerId={'PqWwdVuq46FtIh_HzJrIm'} />
       </div>
       {roomKeys.map((roomKey) => <div key={roomKey}>{roomKey}</div>)}
       {roomKeys.length}
