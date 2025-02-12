@@ -81,7 +81,7 @@ export default function Movies() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white shadow sm:rounded-lg p-6">
+      <div className="bg-white shadow-sm sm:rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">Search Movies</h2>
         <div className="flex gap-4 mb-4">
           <Input
@@ -94,7 +94,7 @@ export default function Movies() {
               }
             }}
             placeholder="Search for movies..."
-            className="flex-1 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="flex-1 shadow-xs focus:border-indigo-500 focus:ring-indigo-500"
           />
           <button
             onClick={searchTMDB}
@@ -114,7 +114,7 @@ export default function Movies() {
               }
             }}
             placeholder="https://api.themoviedb.org/3..."
-            className="flex-1 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="flex-1 shadow-xs focus:border-indigo-500 focus:ring-indigo-500"
           />
           <button
             onClick={searchTMDB}
@@ -128,7 +128,7 @@ export default function Movies() {
           <select
             value={selectedListId}
             onChange={(e) => setSelectedListId(e.target.value)}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="block w-full rounded-md border-gray-300 shadow-xs focus:border-indigo-500 focus:ring-indigo-500"
           >
             <option value="">Select a list</option>
             {lists?.map((list) => (
@@ -140,7 +140,7 @@ export default function Movies() {
         </div>
       </div>
 
-        <div className="bg-white shadow sm:rounded-lg p-6 overflow-y-auto">
+        <div className="bg-white shadow-sm sm:rounded-lg p-6 overflow-y-auto">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
             {searchResults.map((movie) => (
               <div key={movie.id} className="border rounded-lg p-4">
@@ -164,7 +164,7 @@ export default function Movies() {
           </div>
         </div>
 
-      {/* <div className="bg-white shadow sm:rounded-lg p-6">
+      {/* <div className="bg-white shadow-sm sm:rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">Added Movies</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
           {movies?.map((movie) => (

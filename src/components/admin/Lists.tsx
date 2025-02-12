@@ -39,7 +39,7 @@ export default function Lists() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white shadow sm:rounded-lg p-6">
+      <div className="bg-white shadow-sm sm:rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4">Create New List</h2>
         <div className="flex gap-4">
           <Input
@@ -47,7 +47,7 @@ export default function Lists() {
             value={newListName}
             onChange={(e: any) => setNewListName(e.target.value)}
             placeholder="Enter list name..."
-            className="flex-1 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="flex-1 shadow-xs focus:border-indigo-500 focus:ring-indigo-500"
           />
           <button
             onClick={() => createList()}
@@ -59,7 +59,7 @@ export default function Lists() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-white shadow sm:rounded-lg p-6">
+        <div className="bg-white shadow-sm sm:rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Movie Lists</h2>
           <div className="space-y-2">
             {lists?.map((list) => (
@@ -85,7 +85,7 @@ export default function Lists() {
           </div>
         </div>
 
-        <div className="lg:col-span-2 bg-white shadow sm:rounded-lg p-6">
+        <div className="lg:col-span-2 bg-white shadow-sm sm:rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">
             {selectedList ? 
               `Movies in ${lists?.find(l => l.id === selectedList)?.name}` : 

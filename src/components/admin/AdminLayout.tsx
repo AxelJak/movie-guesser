@@ -15,9 +15,9 @@ export default function AdminLayout() {
 
   return (
     <div className="bg-gray-100 w-full h-screen">
-      <nav className="bg-white shadow-sm">
+      <nav className="bg-white shadow-xs">
           <div className="flex justify-around h-16">
-              <div className="flex-shrink-0 flex items-center">
+              <div className="shrink-0 flex items-center">
                 <h1 className="text-xl font-bold">Movie Guesser Admin</h1>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
