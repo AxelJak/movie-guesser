@@ -1,5 +1,5 @@
 import { useZero } from "@/hooks/use-zero";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useQuery } from "@rocicorp/zero/react";
 import { createMessage } from "@/utils/message";
 import { createGuess } from "@/utils/guess";
@@ -12,6 +12,7 @@ export type AutocompleteOption = {
   value: string
   label: string
 }
+
 export default function RoomInput({ listId, roomId, playerId }: { listId: string, roomId: string, playerId: string }) {
   const z = useZero();
   const [open, setOpen] = useState(false)
@@ -22,57 +23,67 @@ export default function RoomInput({ listId, roomId, playerId }: { listId: string
   const [movies, setMovies] = useState<Movie[]>([])
   const [filteredMovies, setFilteredMovies] = useState<Movie[]>([])
 
+  const documentRef = useRef(document);
+
+  const handleSelect = (submit: string) => {
+    if (chat) {
+      sendMessage(submit)
+    } else {
+      sendGuess(submit)
+      setOpen(false);    
+    }
+    setValue("")
+  }
+
+  const handleKeyDownEvent = useCallback((event: any) => {
+    if (event.key === 'Enter') {
+      if (!chat) {
+        if (filteredMovies.length === 0) return;
+        handleSelect(filteredMovies[0].title);
+      } else {
+        handleSelect(value);
+      }
+    }
+    if (event.ctrlKey && event.key === 's'){
+      setChat(!chat);
+    }
+  }, [chat, setChat, filteredMovies, handleSelect])
+
+  useEffect(() => {
+    documentRef.current.addEventListener('keydown', handleKeyDownEvent);
+    return () => {
+      documentRef.current.removeEventListener('keydown', handleKeyDownEvent);
+    };
+  }, [chat, filteredMovies, setChat, handleKeyDownEvent]);
+  
+
   useEffect(() => {
     if (!list) return;
     setMovies([...list.movies])
   }, [list])
 
-  function sendMessage() {
+  function sendMessage(message: string) {
     z.mutate.message.insert(
-      createMessage(value, playerId, roomId)
+      createMessage(message, roomId, playerId)
     );
   }
 
-  function sendGuess() {
+  function sendGuess(guess: string) {
     z.mutate.guess.insert(
-      createGuess(value, playerId, roomId)
+      createGuess(guess, roomId, playerId)
     );
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value
     setValue(inputValue)
-    if(!chat) return;
     setOpen(inputValue.length > 0)
     const filtered = movies.filter((movie) => movie.title.toLowerCase().includes(inputValue.toLowerCase()))
     setFilteredMovies(filtered)
   }
 
-  const handleSelect = () => {
-    if (!value) return;
-    if (chat) {
-      sendMessage()
-    } else {
-      sendGuess()
-      setOpen(false);    
-    }
-    setValue("")
-  }
-
-  function handleKeyDownEvent(event: any) {
-    if (event.key === 'Enter') {
-      if(!chat) {
-        setValue(filteredMovies[0].title);
-      }
-      handleSelect();
-    }
-    if (event.ctrlKey && event.key === 's'){
-      setChat(!chat);
-    }
-  }
-
   return (
-    <div className="relative">
+    <div className="relative w-[350px]">
       <AnimatePresence mode="wait">
         { chat ? 
           <motion.label 
@@ -98,10 +109,8 @@ export default function RoomInput({ listId, roomId, playerId }: { listId: string
       <Input
         type="text"
         className={chat ? "border-green-200 rounded-tl-none" : "border-blue-400 rounded-tl-none"} 
-        placeholder={""}
         value={value}
         onChange={handleInputChange}
-        onKeyDown={handleKeyDownEvent}
       />
       {open && !chat && (
         <div className="absolute w-full mt-1 bg-background border rounded-md shadow-md z-10">

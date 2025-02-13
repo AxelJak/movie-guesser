@@ -1,7 +1,8 @@
 import { useZero } from '@/hooks/use-zero';
 import { useQuery } from '@rocicorp/zero/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useSearch, useLocation } from 'wouter';
+import { useCookies } from 'react-cookie';
 import GameRoom from '@/components/room/GameRoom';
 import CreatePlayer from '@/components/room/CreatePlayer';
 
@@ -10,12 +11,28 @@ export default function Room() {
   const params = useParams();
   const search = useSearch();
   const [_, navigate] = useLocation();
+  const [cookies] = useCookies(["playerId"]);
+  const playerId = cookies.playerId ?? '';
   const createRoom = search.split('=')[1] === 'create' ? true : false;
   const [playerJoined, setPlayerJoined] = useState(false);
   const roomKey = params[0] ?? '';
 
-  const roomQuery = z.query.room.where('room_key', roomKey).one();
-  const [room] = useQuery(roomQuery);
+  const roomQuery = z.query.room.where('room_key', roomKey).related('players').one();
+  const [room, roomResult] = useQuery(roomQuery);
+
+  useEffect(() => {
+    if (room && roomResult.type === 'complete' && room.players.find((player) => player.id === playerId)) {
+      setPlayerJoined(true);
+    }
+  }, [room]);
+
+  if(roomResult.type !== 'complete') {
+    return (
+      <div>
+        <span>Loading...</span>
+      </div>
+    );
+  }
 
   if (!room) {
     return (

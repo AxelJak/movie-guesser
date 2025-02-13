@@ -4,24 +4,20 @@ import { useCookies } from 'react-cookie';
 import { useLocation } from "wouter";
 import { Schema } from "@/schema";
 import type { Movie } from "@/schema";
-import { createGuess } from "@/utils/guess";
-import { createMessage } from "@/utils/message";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import PlayersList from "@/components/PlayersList";
 import Settings from "@/components/room/Settings";
-import MovieAutocomplete from '@/components/movie/MovieAutocomplete';
 import MovieCard from '@/components/room/MovieCard';
+import RoomInput from "@/components/room/RoomInput";
 
 export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string, setPlayerJoined: any }) {
   const [_, navigate] = useLocation(); 
 
   const z = useZero<Schema>();
   const [cookies] = useCookies(["playerId"]);
-  const [message, setMessage] = useState("");
   const [settings, setSettings] = useState({});
   const [playerId, setPlayerId] = useState<string>('');
-  const [currentMovie, setCurrentMovie] = useState<Movie | undefined>();
+  const [currentMovie, setCurrentMovie] = useState<Movie[] | undefined>();
   
   const rooms = z.query.room
   .related('players')
@@ -31,7 +27,7 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
   
   const [room, roomResult] = useQuery(rooms.one());
   const moviesQuery = z.query.list.related('movies').where('id', room?.settings?.listID ?? '');
-  const [list] = useQuery(moviesQuery);
+  const [list, listResult] = useQuery(moviesQuery);
 
   useEffect(() => {
     if (room && room.settings) {
@@ -40,15 +36,20 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
   }, [room, settings]);
 
   useEffect(() => {
-    if (!list) return;
-    setCurrentMovie(list[0].movies[0]);
+    if (listResult.type !== 'complete') return;
+    const randomMovies = [];
+    for (let i = 0; i < 3; i++) {
+      const random = Math.floor(Math.random() * 100);
+      randomMovies.push(list[0].movies[random]);
+    }
+    setCurrentMovie(randomMovies);
   }, [list]);
   
   
   const messageQuery = z.query.message
       .related("sender", (sender) => sender.one())
       .where("roomID", room?.id ?? '')
-      .orderBy("timestamp", 'desc');
+      .orderBy("timestamp", 'asc');
   const guessQuery = z.query.guess
       .related("sender", (sender) => sender.one())
       .where("roomID", room?.id ?? '')
@@ -72,17 +73,6 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
       setPlayerJoined(false);
     }
   }, [cookies, roomResult]);
-  
-  function submitGuess(movieTitle: string) {
-    if (!room) return;
-    z.mutate.guess.insert(createGuess(movieTitle, room.id, cookies.playerId));
-  }
-
-  function submitMessage() {
-    if (!room || !message) return;
-    z.mutate.message.insert(createMessage(message, room.id, cookies.playerId));
-    setMessage(""); // Clear input after submission
-  }
 
   function leaveRoom() {
     if (playerId) {
@@ -116,9 +106,7 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
       </button>
       <div className="flex gap-2">
 
-        { currentMovie && <div className="w-[350px] absolute">
-          <MovieCard movie={currentMovie} />
-        </div>}
+        { currentMovie && <MovieCard movies={currentMovie} />}
         <div className="flex flex-col gap-2">
           <PlayersList roomPlayers={room.players} />
           {currentPlayer?.isHost && <Button>Start game</Button>}
@@ -126,30 +114,21 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
         <div className="flex flex-col gap-2 justify-between" >
           <span className="text-3xl font-bold text-center">Room {room.room_key}</span>
           <div className="flex flex-col justify-end grow">
-            <div className="h-[700px] overflow-y-auto flex flex-col-reverse">
-              {messages.map((message) =>
-                <span key={message.id} className="text-l">
-                  {`${message.sender?.name}: ${message.message}`}
-                </span>
-              )}
-              {guessesByRoom.map(guess => <span key={guess.id} className="text-l text-blue-400">{guess.sender?.name}: {guess.guess}</span>)}
-            </div>
+              {[...messages, ...guessesByRoom]
+                .sort((a, b) => a.timestamp - b.timestamp)
+                .map(item => {
+                  const isGuess = 'guess' in item;
+                  return (
+                    <span 
+                      key={item.id} 
+                      className={`text-l ${isGuess ? 'text-blue-400' : ''}`}
+                    >
+                      {`${item.sender?.name}: ${isGuess ? item.guess : item.message}`}
+                    </span>
+                  );
+                })}
           </div>
-          <div className="flex gap-2">
-            { room.settings && <MovieAutocomplete listId={room.settings.listID} onSelect={(movieTitle) => submitGuess(movieTitle)} /> }
-            <Input 
-              className="w-[400px]"
-              type="text" 
-              value={message}
-              onKeyDown={(e: any) => {
-                if (e.key === "Enter") {
-                  submitMessage();
-                }
-              }}
-              onChange={(e: any) => setMessage(e.target.value)} 
-              />
-            <Button onClick={submitMessage}>Send</Button>
-          </div>
+          {room.settings ? <RoomInput listId={room.settings.listID} roomId={room.id} playerId={playerId} /> : <div>loading</div> }
         </div>
         {currentPlayer?.isHost && Object.keys(settings).length > 0 && (
             <Settings roomSettings={settings} />

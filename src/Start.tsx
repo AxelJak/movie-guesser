@@ -8,7 +8,6 @@ import { randWord } from "./utils/rand";
 import { createGame } from "@/hooks/useGame";
 import { nanoid } from "nanoid";
 import { createSetting } from "./utils/settings";
-import RoomInput from "@/components/room/RoomInput";
 
 export default function Start() {
 
@@ -16,12 +15,13 @@ export default function Start() {
   const [_, navigate] = useLocation();
 
   const rooms = z.query.room;
-  const [room] = useQuery(rooms);
+  const [room, roomResult] = useQuery(rooms);
   const [roomKeys, setRoomKeys] = useState<string[]>([]);
   const [roomKey, setRoomKey] = useState<string>('');
 
   useEffect(() => {
-    if (room && room.length > roomKeys.length) {
+    console.log(roomResult);
+    if (room && roomResult.type === 'complete') {
       setRoomKeys(room.map((room) => room.room_key));
     }
   }, [room]);
@@ -42,6 +42,7 @@ export default function Start() {
   }
 
   function joinRoom() {
+    if(roomKey.length < 4) return;
     navigate(`/room/${roomKey}`);
   }
 
@@ -53,7 +54,6 @@ export default function Start() {
         <Button onClick={() => joinRoom()}>Join room</Button>
         <Button onClick={() => createRoom()}>Create room</Button>
         <Button onClick={() => navigate("/admin")}>Admin</Button>
-        <RoomInput listId={'zny1ju25l6n'} roomId={'nDK8mQ9dMBdZzPW1R3n-Z'} playerId={'PqWwdVuq46FtIh_HzJrIm'} />
       </div>
       {roomKeys.map((roomKey) => <div key={roomKey}>{roomKey}</div>)}
       {roomKeys.length}
