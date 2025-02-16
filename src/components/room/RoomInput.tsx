@@ -83,7 +83,7 @@ export default function RoomInput({ listId, roomId, playerId }: { listId: string
   }
 
   return (
-    <div className="relative w-[350px]">
+    <div className="relative w-full">
       <AnimatePresence mode="wait">
         { chat ? 
           <motion.label 

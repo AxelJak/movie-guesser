@@ -6,6 +6,7 @@ import { Input } from "../ui/input";
 import { Slider } from "../ui/slider";
 import { useForm } from "react-hook-form";
 import MovielistSelect from "../setting/MovielistSelect";
+import NumberInput from "../setting/NumberInput";
 
 interface SettingsFormValues {
   rounds: number;
@@ -118,14 +119,18 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
               name="rounds"
               render={({ field }) => (
                 <FormItem>
+                  <div className="flex">
                   <FormLabel>Number of Rounds</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       {...field}
+                      className="w-16"
                       onChange={(e) => field.onChange(parseInt(e.target.value))}
+
                     />
                   </FormControl>
+                  </div>
                   <FormDescription>How many rounds to play</FormDescription>
                 </FormItem>
               )}
@@ -166,6 +171,7 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
             />
           </form>
         </Form>
+        <NumberInput min={1} max={100} />
       </CardContent>
     </Card>
   );

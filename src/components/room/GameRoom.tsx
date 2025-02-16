@@ -16,6 +16,7 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
   const z = useZero<Schema>();
   const [cookies] = useCookies(["playerId"]);
   const [settings, setSettings] = useState({});
+  const [showMovies, setShowMovies] = useState(true);
   const [playerId, setPlayerId] = useState<string>('');
   const [currentMovie, setCurrentMovie] = useState<Movie[] | undefined>();
   
@@ -88,6 +89,10 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
     navigate("/");
   }
 
+  function hideMovies() {
+    setShowMovies(false);
+  }
+
   if (!room) {
     return (
       <div>
@@ -100,19 +105,22 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
   }
 
   return (
-    <div className="flex bg-white p-5 rounded-lg border-2">
-      <button className="absolute left-20 top-20" onClick={() => leaveRoom()}>
+    <div className="flex flex-col w-[70%] h-[60%] bg-white p-5 rounded-lg border-2">
+      <Button className="absolute left-20 top-20" onClick={() => leaveRoom()}>
         Back
-      </button>
-      <div className="flex gap-2">
+      </Button>
+      <Button className="absolute left-0 top-0" onClick={() => hideMovies()}>
+        {showMovies ? 'Hide' : 'Show'}
+      </Button>
 
-        { currentMovie && <MovieCard movies={currentMovie} />}
+      <span className="text-3xl font-bold text-center">Room {room.room_key}</span>
+      { currentMovie && showMovies && <MovieCard movies={currentMovie} />}
+      <div className='flex grow gap-2'>
         <div className="flex flex-col gap-2">
           <PlayersList roomPlayers={room.players} />
           {currentPlayer?.isHost && <Button>Start game</Button>}
         </div>
-        <div className="flex flex-col gap-2 justify-between" >
-          <span className="text-3xl font-bold text-center">Room {room.room_key}</span>
+        <div className="flex flex-col grow gap-2 justify-between" >
           <div className="flex flex-col justify-end grow">
               {[...messages, ...guessesByRoom]
                 .sort((a, b) => a.timestamp - b.timestamp)
