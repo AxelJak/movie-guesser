@@ -89,8 +89,27 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
     navigate("/");
   }
 
+  function startGame() {
+    if (!room) return;
+    if (!room.gameState) return;
+    const playerCount = room.players.length;
+    const firstPlayer = Math.floor(Math.random() * playerCount);
+
+    z.mutate.game_state.update({
+      ...room.gameState,
+      currentPlayerExplaining: room.players[firstPlayer].id,
+      startedAt: new Date().getTime(),
+      gameStatus: "playing",
+      currentRound: 1,
+    });
+  }
+
   function hideMovies() {
     setShowMovies(false);
+  }
+
+  function showMovie() {
+    setShowMovies(true);
   }
 
   if (!room) {
@@ -110,7 +129,10 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
         Back
       </Button>
       <Button className="absolute left-0 top-0" onClick={() => hideMovies()}>
-        {showMovies ? 'Hide' : 'Show'}
+        Hide
+      </Button>
+      <Button className="absolute left-20 top-0" onClick={() => showMovie()}>
+        Show
       </Button>
 
       <span className="text-3xl font-bold text-center">Room {room.room_key}</span>
@@ -118,7 +140,7 @@ export default function GameRoom({ roomKey, setPlayerJoined }: { roomKey: string
       <div className='flex grow gap-2'>
         <div className="flex flex-col gap-2">
           <PlayersList roomPlayers={room.players} />
-          {currentPlayer?.isHost && <Button>Start game</Button>}
+          {currentPlayer?.isHost && room.gameState?.gameStatus === "waiting" && <Button onClick={() => startGame()}>Start game</Button>}
         </div>
         <div className="flex flex-col grow gap-2 justify-between" >
           <div className="flex flex-col justify-end grow">

@@ -17,4 +17,4 @@ export function createGame(id: string, roomId: string): GameState {
     startedAt: null,
     endedAt: null
   };
-  }
+}

@@ -58,7 +58,7 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
   if (!roomSettings) return null;
 
   return (
-    <Card className="w-[350px]">
+    <Card className="w-[350px] h-full overflow-y-auto">
       <CardHeader>
         <CardTitle>Room Settings</CardTitle>
       </CardHeader>
@@ -171,7 +171,6 @@ export default function Settings({ roomSettings }: { roomSettings: SettingsProps
             />
           </form>
         </Form>
-        <NumberInput min={1} max={100} />
       </CardContent>
     </Card>
   );
